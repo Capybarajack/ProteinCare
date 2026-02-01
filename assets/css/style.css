@@ -91,6 +91,44 @@ body {
   display: block;
 }
 
+.preview-frame--tight {
+  max-height: 520px;
+}
+
+.preview-frame--tight img {
+  max-height: 520px;
+  object-fit: contain;
+}
+
+.kpi {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.kpi .kpi-card {
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: white;
+  padding: 12px;
+}
+
+.kpi .kpi-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.kpi .kpi-value {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 576px) {
+  .kpi {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 576px) {
   .dropzone-inner {
     grid-template-columns: 1fr;
