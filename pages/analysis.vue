@@ -52,7 +52,10 @@ async function analyzeWithAI() {
   isAnalyzing.value = true
 
   try {
-    const resp = await $fetch<{ ok: boolean; result: AiNutritionResult | null; rawText: string }>('/api/analyze', {
+    const config = useRuntimeConfig()
+    const base = String(config.public.backendBaseUrl || '').replace(/\/$/, '')
+
+    const resp = await $fetch<{ ok: boolean; result: AiNutritionResult | null; rawText: string }>(`${base}/api/vision/analyze`, {
       method: 'POST',
       body: {
         imageDataUrl: session.value.imageDataUrl,

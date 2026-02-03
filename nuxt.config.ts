@@ -21,5 +21,11 @@ export default defineNuxtConfig({
     }
   },
 
+  runtimeConfig: {
+    public: {
+      backendBaseUrl: process.env.NUXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000',
+    },
+  },
+
   css: ['~/assets/css/style.css']
 })
