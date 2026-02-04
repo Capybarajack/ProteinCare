@@ -87,8 +87,16 @@ function saveToLog() {
   saved.value = true
 }
 
-onMounted(() => {
+const didAutoStart = ref(false)
+
+onMounted(async () => {
   load()
+
+  const autostart = String(route.query.autostart || '')
+  if (!didAutoStart.value && session.value && (autostart === '1' || autostart.toLowerCase() === 'true')) {
+    didAutoStart.value = true
+    await analyzeWithAI()
+  }
 })
 </script>
 

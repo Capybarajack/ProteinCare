@@ -1,74 +1,17 @@
-<template>
-  <div>
-    <TopNav />
-
-    <div class="container py-4">
-      <header class="mb-3">
-        <h1 class="h4 mb-1 title">Upload</h1>
-        <p class="text-muted mb-0">Choose an image, preview it, then go to Analysis.</p>
-      </header>
-
-      <section class="card shadow-sm border-0">
-        <div class="card-body">
-          <div
-            class="dropzone"
-            :class="{ 'is-dragover': isDragOver }"
-            @dragenter.prevent="onDragEnter"
-            @dragover.prevent="onDragOver"
-            @dragleave.prevent="onDragLeave"
-            @drop.prevent="onDrop"
-            role="button"
-            tabindex="0"
-            @click="openFilePicker"
-            @keydown.enter="openFilePicker"
-          >
-            <div class="dropzone-inner">
-              <div class="dropzone-icon-wrap">
-                <span class="material-symbols-outlined dropzone-icon" aria-hidden="true">cloud_upload</span>
-              </div>
-              <div class="text-center">
-                <div class="font-weight-bold">Drag & drop an image here</div>
-                <div class="text-muted small">or click to choose a file (image/*)</div>
-                <div class="text-muted small">Max size: {{ maxSizeMb }}MB</div>
-              </div>
-            </div>
-
-            <input ref="fileInput" class="d-none" type="file" accept="image/*" @change="onFilePicked" />
-          </div>
-
-          <div v-if="error" class="alert alert-danger mt-3 mb-0" role="alert">
-            {{ error }}
-          </div>
-
-          <div v-if="previewUrl" class="preview mt-4">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <div class="small text-muted">
-                <span class="font-weight-bold text-dark">{{ fileName }}</span>
-                <span class="mx-2">•</span>
-                <span>{{ fileSizeText }}</span>
-              </div>
-              <div class="d-flex" style="gap: 8px">
-                <button class="btn btn-sm btn-outline-secondary" type="button" @click="clear">Clear</button>
-                <NuxtLink to="/analysis" class="btn btn-sm btn-primary" @click.native="noop">
-                  Continue
-                </NuxtLink>
-              </div>
-            </div>
-
-            <div class="preview-frame preview-frame--tight">
-              <img :src="previewUrl" alt="Preview" />
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { onBeforeUnmount, ref, computed } from 'vue'
-import TopNav from '~/components/TopNav.vue'
 import { useUploadSession } from '~/composables/useUploadSession'
+
+const route = useRoute()
+
+const navItems = [
+  { to: '/', icon: 'home', label: 'Home' },
+  { to: '/upload', icon: 'cloud_upload', label: 'Upload' },
+  { to: '/analysis', icon: 'analytics', label: 'Analysis' },
+  { to: '/dashboard', icon: 'dashboard', label: 'Log' },
+]
+
+useHead({ title: 'Upload' })
 
 const session = useUploadSession()
 
@@ -177,9 +120,123 @@ async function onDrop(e: DragEvent) {
   await validateAndStore(file)
 }
 
-function noop() {}
-
 onBeforeUnmount(() => {
   revokePreview()
 })
 </script>
+
+<template>
+  <div class="pc-frame">
+    <header class="pc-topbar">
+      <div class="pc-topbar-row">
+        <button class="pc-iconbtn" type="button" @click="navigateTo('/')" aria-label="Back">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+
+        <div style="text-align:center; flex:1">
+          <div style="font-weight: 950; letter-spacing: -0.02em">Upload</div>
+          <div class="pc-muted" style="font-size: 11px; font-weight: 750">選擇照片 · 一鍵 AI 分析</div>
+        </div>
+
+        <div style="width: 40px" aria-hidden="true" />
+      </div>
+    </header>
+
+    <main class="pc-main">
+      <section class="pc-card pc-card-pad">
+        <div
+          class="dropzone"
+          :class="{ 'is-dragover': isDragOver }"
+          @dragenter.prevent="onDragEnter"
+          @dragover.prevent="onDragOver"
+          @dragleave.prevent="onDragLeave"
+          @drop.prevent="onDrop"
+          role="button"
+          tabindex="0"
+          @click="openFilePicker"
+          @keydown.enter="openFilePicker"
+          aria-label="Upload image dropzone"
+        >
+          <div class="dropzone-inner">
+            <div class="dropzone-icon-wrap" aria-hidden="true">
+              <span class="material-symbols-outlined dropzone-icon">cloud_upload</span>
+            </div>
+            <div>
+              <div style="font-weight: 950; letter-spacing: -0.02em">拖曳或點擊上傳</div>
+              <div class="pc-muted" style="font-size: 12px; font-weight: 650; margin-top: 6px">
+                image/* · Max {{ maxSizeMb }}MB
+              </div>
+            </div>
+          </div>
+
+          <input ref="fileInput" class="d-none" type="file" accept="image/*" @change="onFilePicked" />
+        </div>
+
+        <div v-if="error" class="pc-card" style="margin-top: 12px; border-radius: 18px; border-color: rgba(239,68,68,0.22); background: rgba(239,68,68,0.06)">
+          <div style="padding: 12px 14px; color: rgba(185,28,28,0.95); font-weight: 800; font-size: 13px">
+            {{ error }}
+          </div>
+        </div>
+
+        <div v-if="previewUrl" style="margin-top: 14px">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: 10px; margin-bottom: 10px">
+            <div style="min-width: 0">
+              <div style="font-weight: 950; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
+                {{ fileName }}
+              </div>
+              <div class="pc-muted" style="font-size: 12px; font-weight: 750">{{ fileSizeText }}</div>
+            </div>
+            <button class="pc-btn" style="height: 42px; border-radius: 16px; padding: 0 14px" type="button" @click="clear">
+              <span class="material-symbols-outlined" style="font-size: 18px">delete</span>
+              清除
+            </button>
+          </div>
+
+          <div class="preview-frame preview-frame--tight">
+            <img :src="previewUrl" alt="Preview" />
+          </div>
+
+          <div class="pc-muted" style="margin-top: 10px; text-align:center; font-size: 11px; font-weight: 800">
+            提示：Analysis 會讀取你這次的 session（localStorage/記憶體）
+          </div>
+        </div>
+      </section>
+
+      <section style="margin-top: 12px">
+        <div class="pc-grid2">
+          <button
+            class="pc-btn"
+            type="button"
+            @click="openFilePicker"
+          >
+            <span class="material-symbols-outlined">image</span>
+            從相簿選擇
+          </button>
+
+          <NuxtLink
+            to="/analysis?autostart=1"
+            class="pc-btn pc-btn--primary"
+            :style="!previewUrl ? 'opacity:0.45; pointer-events:none' : ''"
+          >
+            <span class="material-symbols-outlined">auto_awesome</span>
+            Analyze with AI
+          </NuxtLink>
+        </div>
+      </section>
+    </main>
+
+    <nav class="pc-bottombar" aria-label="Bottom navigation">
+      <div class="pc-nav">
+        <NuxtLink
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          :class="['pc-nav-item', { 'is-active': route.path === item.to }]"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">{{ item.icon }}</span>
+          <div class="pc-nav-label">{{ item.label }}</div>
+        </NuxtLink>
+      </div>
+    </nav>
+  </div>
+</template>
