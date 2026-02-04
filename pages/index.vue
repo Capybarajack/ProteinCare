@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useUploadSession } from '~/composables/useUploadSession'
+
 const route = useRoute()
 
 const navItems = [
@@ -27,6 +30,17 @@ const steps = [
 ]
 
 useHead({ title: 'ProtainCare' })
+
+const session = useUploadSession()
+
+const lastUploadMeta = computed(() => {
+  if (!session.value) return null
+  const sizeMb = (session.value.fileSize / (1024 * 1024)).toFixed(2)
+  return {
+    fileName: session.value.fileName,
+    sizeText: `${sizeMb} MB`,
+  }
+})
 </script>
 
 <template>
@@ -86,39 +100,66 @@ useHead({ title: 'ProtainCare' })
           </NuxtLink>
         </div>
 
-        <div class="pc-card" style="margin-top: 16px; overflow:hidden; position: relative">
-          <div
-            style="height: 170px; position: relative; background:
-              radial-gradient(900px 260px at 12% 18%, rgba(var(--accent-rgb), 0.30), transparent 58%),
-              radial-gradient(760px 260px at 92% 36%, rgba(var(--accent-2-rgb), 0.22), transparent 62%),
-              radial-gradient(620px 340px at 50% 120%, rgba(var(--accent-warm-rgb), 0.12), transparent 62%),
-              linear-gradient(180deg, rgba(255,255,255,0.58), rgba(255,255,255,0.00));"
-            aria-label="Flow preview"
-          >
-            <div class="pc-floaty pc-floaty--a" style="--rot: 4deg" aria-hidden="true">
-              <span class="material-symbols-outlined" style="font-size: 18px; color: rgba(var(--accent-2-rgb), 0.95)">photo_camera</span>
-              拍照
-            </div>
-
-            <div class="pc-floaty pc-floaty--b" style="--rot: -3deg" aria-hidden="true">
-              <span class="material-symbols-outlined" style="font-size: 18px; color: rgba(var(--accent-warm-rgb), 0.95)">bolt</span>
-              立刻分析
-            </div>
-
-            <div style="position:absolute; inset:0; display:flex; align-items:flex-end; justify-content:space-between; padding: 16px">
-              <div>
-                <div style="font-weight: 950; letter-spacing: -0.03em; font-size: 18px">One-tap Analysis</div>
-                <div class="pc-muted" style="font-size: 12px; font-weight: 850">Upload → Analysis(autostart) → Log</div>
+        <section class="pc-card pc-card-pad" style="margin-top: 16px">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: 12px">
+            <div style="min-width:0">
+              <div style="font-weight: 950; letter-spacing: -0.03em; font-size: 16px">最近一次上傳</div>
+              <div class="pc-muted" style="font-size: 12px; font-weight: 750; margin-top: 4px">
+                你可以從這裡直接繼續分析，不用再找入口。
               </div>
-              <div
-                style="width: 56px; height: 56px; border-radius: 20px; background: rgba(255,255,255,0.76); border: 1px solid rgba(18,24,20,0.08); display:grid; place-items:center"
-                aria-hidden="true"
-              >
-                <span class="material-symbols-outlined" style="color: var(--accent-dark); font-size: 26px">auto_awesome</span>
+            </div>
+            <div class="pc-pill" style="letter-spacing: 0.12em">READY</div>
+          </div>
+
+          <div v-if="session" style="margin-top: 12px; display:flex; gap: 12px; align-items: center">
+            <div
+              style="width: 74px; height: 74px; border-radius: 20px; overflow:hidden; border: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.8)"
+              aria-label="Last upload thumbnail"
+            >
+              <img :src="session.imageDataUrl" alt="Last uploaded" style="width:100%; height:100%; object-fit: cover; display:block" />
+            </div>
+
+            <div style="flex:1; min-width:0">
+              <div style="font-weight: 950; letter-spacing:-0.02em; white-space: nowrap; overflow:hidden; text-overflow: ellipsis">
+                {{ lastUploadMeta?.fileName }}
+              </div>
+              <div class="pc-muted" style="font-size: 12px; font-weight: 800; margin-top: 4px">
+                {{ lastUploadMeta?.sizeText }} · {{ session.mimeType }}
               </div>
             </div>
           </div>
-        </div>
+
+          <div v-else style="margin-top: 12px; display:flex; gap: 12px; align-items:flex-start">
+            <div
+              style="width: 46px; height: 46px; border-radius: 16px; display:grid; place-items:center; background: rgba(var(--accent-warm-rgb), 0.12); border: 1px solid rgba(var(--accent-warm-rgb), 0.18)"
+              aria-hidden="true"
+            >
+              <span class="material-symbols-outlined" style="color: rgba(var(--accent-warm-rgb), 0.95)">info</span>
+            </div>
+            <div>
+              <div style="font-weight: 950; letter-spacing:-0.02em">尚未上傳圖片</div>
+              <div class="pc-muted" style="font-size: 13px; font-weight: 650; margin-top: 4px">
+                先去 Upload 選一張照片，就能一鍵開始 AI 分析。
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 14px" :style="!session ? 'opacity:0.55' : ''">
+            <div class="pc-grid2">
+              <NuxtLink
+                :to="session ? '/analysis?autostart=1' : '/upload'"
+                class="pc-btn pc-btn--primary"
+              >
+                <span class="material-symbols-outlined">auto_awesome</span>
+                {{ session ? '繼續 AI 分析' : '去上傳' }}
+              </NuxtLink>
+              <NuxtLink to="/dashboard" class="pc-btn pc-btn--ghost">
+                <span class="material-symbols-outlined">history</span>
+                查看紀錄
+              </NuxtLink>
+            </div>
+          </div>
+        </section>
       </section>
 
       <section style="margin-top: 16px">
