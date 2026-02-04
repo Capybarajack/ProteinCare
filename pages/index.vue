@@ -55,7 +55,9 @@ useHead({ title: 'ProtainCare' })
     </header>
 
     <main class="pc-main">
-      <section class="pc-hero">
+      <section class="pc-hero pc-hero--playful">
+        <div class="pc-sparkles" aria-hidden="true" />
+
         <div class="pc-pill">
           <span class="material-symbols-outlined" style="font-size:16px">verified</span>
           QUICK FLOW
@@ -84,21 +86,33 @@ useHead({ title: 'ProtainCare' })
           </NuxtLink>
         </div>
 
-        <div class="pc-card" style="margin-top: 16px; overflow:hidden">
+        <div class="pc-card" style="margin-top: 16px; overflow:hidden; position: relative">
           <div
             style="height: 170px; position: relative; background:
-              radial-gradient(900px 260px at 12% 18%, rgba(var(--accent-rgb), 0.32), transparent 58%),
-              radial-gradient(700px 240px at 100% 40%, rgba(var(--accent-dark-rgb), 0.22), transparent 60%),
-              linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.00));"
-            aria-hidden="true"
+              radial-gradient(900px 260px at 12% 18%, rgba(var(--accent-rgb), 0.30), transparent 58%),
+              radial-gradient(760px 260px at 92% 36%, rgba(var(--accent-2-rgb), 0.22), transparent 62%),
+              radial-gradient(620px 340px at 50% 120%, rgba(var(--accent-warm-rgb), 0.12), transparent 62%),
+              linear-gradient(180deg, rgba(255,255,255,0.58), rgba(255,255,255,0.00));"
+            aria-label="Flow preview"
           >
+            <div class="pc-floaty pc-floaty--a" style="--rot: 4deg" aria-hidden="true">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: rgba(var(--accent-2-rgb), 0.95)">photo_camera</span>
+              拍照
+            </div>
+
+            <div class="pc-floaty pc-floaty--b" style="--rot: -3deg" aria-hidden="true">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: rgba(var(--accent-warm-rgb), 0.95)">bolt</span>
+              立刻分析
+            </div>
+
             <div style="position:absolute; inset:0; display:flex; align-items:flex-end; justify-content:space-between; padding: 16px">
               <div>
                 <div style="font-weight: 950; letter-spacing: -0.03em; font-size: 18px">One-tap Analysis</div>
-                <div class="pc-muted" style="font-size: 12px; font-weight: 800">Upload → Analysis(autostart) → Log</div>
+                <div class="pc-muted" style="font-size: 12px; font-weight: 850">Upload → Analysis(autostart) → Log</div>
               </div>
               <div
                 style="width: 56px; height: 56px; border-radius: 20px; background: rgba(255,255,255,0.76); border: 1px solid rgba(18,24,20,0.08); display:grid; place-items:center"
+                aria-hidden="true"
               >
                 <span class="material-symbols-outlined" style="color: var(--accent-dark); font-size: 26px">auto_awesome</span>
               </div>
