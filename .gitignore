@@ -8,3 +8,7 @@ dist/
 # Secrets
 assets/api/openai.txt
 
+# Local tooling
+.codex/
+.codex_prompt_dashboard.txt
+

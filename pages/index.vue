@@ -2,6 +2,13 @@
 import { computed } from 'vue'
 import { useUploadSession } from '~/composables/useUploadSession'
 
+const supabase = useSupabase()
+const user = useAuthUser()
+
+async function signOut() {
+  await supabase.auth.signOut()
+}
+
 const route = useRoute()
 
 const navItems = [
@@ -58,6 +65,13 @@ const lastUploadMeta = computed(() => {
         </NuxtLink>
 
         <div style="display:flex; gap:10px">
+          <NuxtLink v-if="!user" to="/login" class="pc-iconbtn" aria-label="Login">
+            <span class="material-symbols-outlined">login</span>
+          </NuxtLink>
+          <button v-else class="pc-iconbtn" type="button" aria-label="Sign out" @click="signOut">
+            <span class="material-symbols-outlined">logout</span>
+          </button>
+
           <NuxtLink to="/dashboard" class="pc-iconbtn" aria-label="Open dashboard">
             <span class="material-symbols-outlined">history</span>
           </NuxtLink>
@@ -100,66 +114,6 @@ const lastUploadMeta = computed(() => {
           </NuxtLink>
         </div>
 
-        <section class="pc-card pc-card-pad" style="margin-top: 16px">
-          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: 12px">
-            <div style="min-width:0">
-              <div style="font-weight: 950; letter-spacing: -0.03em; font-size: 16px">最近一次上傳</div>
-              <div class="pc-muted" style="font-size: 12px; font-weight: 750; margin-top: 4px">
-                你可以從這裡直接繼續分析，不用再找入口。
-              </div>
-            </div>
-            <div class="pc-pill" style="letter-spacing: 0.12em">READY</div>
-          </div>
-
-          <div v-if="session" style="margin-top: 12px; display:flex; gap: 12px; align-items: center">
-            <div
-              style="width: 74px; height: 74px; border-radius: 20px; overflow:hidden; border: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.8)"
-              aria-label="Last upload thumbnail"
-            >
-              <img :src="session.imageDataUrl" alt="Last uploaded" style="width:100%; height:100%; object-fit: cover; display:block" />
-            </div>
-
-            <div style="flex:1; min-width:0">
-              <div style="font-weight: 950; letter-spacing:-0.02em; white-space: nowrap; overflow:hidden; text-overflow: ellipsis">
-                {{ lastUploadMeta?.fileName }}
-              </div>
-              <div class="pc-muted" style="font-size: 12px; font-weight: 800; margin-top: 4px">
-                {{ lastUploadMeta?.sizeText }} · {{ session.mimeType }}
-              </div>
-            </div>
-          </div>
-
-          <div v-else style="margin-top: 12px; display:flex; gap: 12px; align-items:flex-start">
-            <div
-              style="width: 46px; height: 46px; border-radius: 16px; display:grid; place-items:center; background: rgba(var(--accent-warm-rgb), 0.12); border: 1px solid rgba(var(--accent-warm-rgb), 0.18)"
-              aria-hidden="true"
-            >
-              <span class="material-symbols-outlined" style="color: rgba(var(--accent-warm-rgb), 0.95)">info</span>
-            </div>
-            <div>
-              <div style="font-weight: 950; letter-spacing:-0.02em">尚未上傳圖片</div>
-              <div class="pc-muted" style="font-size: 13px; font-weight: 650; margin-top: 4px">
-                先去 Upload 選一張照片，就能一鍵開始 AI 分析。
-              </div>
-            </div>
-          </div>
-
-          <div style="margin-top: 14px" :style="!session ? 'opacity:0.55' : ''">
-            <div class="pc-grid2">
-              <NuxtLink
-                :to="session ? '/analysis?autostart=1' : '/upload'"
-                class="pc-btn pc-btn--primary"
-              >
-                <span class="material-symbols-outlined">auto_awesome</span>
-                {{ session ? '繼續 AI 分析' : '去上傳' }}
-              </NuxtLink>
-              <NuxtLink to="/dashboard" class="pc-btn pc-btn--ghost">
-                <span class="material-symbols-outlined">history</span>
-                查看紀錄
-              </NuxtLink>
-            </div>
-          </div>
-        </section>
       </section>
 
       <section style="margin-top: 16px">

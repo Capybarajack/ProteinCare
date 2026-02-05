@@ -25,6 +25,10 @@ export default defineNuxtConfig({
     public: {
       // Backend default (Express): http://localhost:1337
       backendBaseUrl: process.env.NUXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:1337',
+
+      // Supabase (client-side publishable key; RLS enforces per-user access)
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY,
     },
   },
 

@@ -11,6 +11,8 @@ const navItems = [
   { to: '/dashboard', icon: 'dashboard', label: 'Log' },
 ]
 
+definePageMeta({ middleware: 'requireAuth' })
+
 useHead({ title: 'Upload' })
 
 const session = useUploadSession()
