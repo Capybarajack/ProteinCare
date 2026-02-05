@@ -1,4 +1,4 @@
-import { createBrowserClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 
 export default defineNuxtPlugin({
   name: 'supabase',
@@ -13,7 +13,16 @@ export default defineNuxtPlugin({
       console.warn('[supabase] Missing SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY')
     }
 
-    const supabase = createBrowserClient(supabaseUrl, supabaseKey)
+    // SPA (ssr:false): use localStorage-based auth storage.
+    // PKCE verifier must persist across the OAuth redirect.
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        flowType: 'pkce',
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+      },
+    })
 
     return { provide: { supabase } }
   },

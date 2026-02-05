@@ -17,6 +17,8 @@ onMounted(async () => {
       throw new Error('Missing OAuth code in callback URL')
     }
 
+    // Exchange code -> session. This requires the PKCE verifier that was stored
+    // when signInWithOAuth() was initiated on the SAME origin (protocol+host+port).
     const { error: e } = await supabase.auth.exchangeCodeForSession(code)
     if (e) throw e
 
