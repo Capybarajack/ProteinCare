@@ -8,22 +8,21 @@ const error = ref('')
 
 onMounted(async () => {
   try {
-    // Completes the PKCE code exchange and stores the session.
-    // supabase-js v2: getSessionFromUrl exists in @supabase/gotrue-js.
-    // If your installed version doesn't have it, tell me and I'll adapt.
-    // @ts-ignore
-    const { data, error: e } = await supabase.auth.getSessionFromUrl({ storeSession: true })
+    // Supabase OAuth (PKCE) returns `?code=...`.
+    // supabase-js v2 uses exchangeCodeForSession.
+    const url = new URL(window.location.href)
+    const code = url.searchParams.get('code')
+
+    if (!code) {
+      throw new Error('Missing OAuth code in callback URL')
+    }
+
+    const { error: e } = await supabase.auth.exchangeCodeForSession(code)
     if (e) throw e
 
-    // If we got a session, route to next (or home)
     const route = useRoute()
     const next = String(route.query.next || '')
     const nextPath = next && next.startsWith('/') ? next : '/'
-
-    if (!data?.session) {
-      // Sometimes providers redirect without session if user canceled.
-      throw new Error('No session returned from OAuth callback')
-    }
 
     await navigateTo(nextPath)
   } catch (e: any) {
