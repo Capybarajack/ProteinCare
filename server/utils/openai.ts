@@ -1,17 +1,17 @@
-import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
-
 let cachedKey: string | null = null
 
 export async function getOpenAIApiKey(): Promise<string> {
   if (cachedKey) return cachedKey
 
-  // Keep the key on the server only. Do NOT expose this path to clients.
-  const keyPath = resolve(process.cwd(), 'assets/api/openai.txt')
-  const raw = await readFile(keyPath, 'utf8')
-  const key = raw.trim()
+  // Server-only: use runtimeConfig / env var.
+  // Do NOT read secrets from assets/ (risk of accidental bundling/exposure).
+  const config = useRuntimeConfig()
+  const key = String(config.openaiApiKey || process.env.OPENAI_API_KEY || '').trim()
 
-  if (!key) throw new Error('OpenAI API key is empty (assets/api/openai.txt)')
+  if (!key) {
+    throw new Error('Missing OpenAI API key. Set OPENAI_API_KEY (runtimeConfig.openaiApiKey).')
+  }
+
   cachedKey = key
   return key
 }

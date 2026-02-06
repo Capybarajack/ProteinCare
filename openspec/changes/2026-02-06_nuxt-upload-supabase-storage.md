@@ -16,3 +16,5 @@ Make the Nuxt app upload the selected image file to Supabase Storage bucket `mea
 ## Notes / assumptions
 - Bucket `meal-photos` exists.
 - Storage RLS/policies allow authenticated users to upload into their own `<userId>/` prefix.
+- Analysis uses same-origin Nitro endpoint: `POST /api/vision/analyze` (reuses `server/api/analyze.post.ts`).
+- OpenAI API key is read from server runtimeConfig/env: `OPENAI_API_KEY` (no `assets/api/openai.txt`).

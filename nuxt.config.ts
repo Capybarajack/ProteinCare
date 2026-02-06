@@ -22,8 +22,12 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Server-only secrets
+    openaiApiKey: process.env.OPENAI_API_KEY,
+
     public: {
       // Backend default (Express): http://localhost:1337
+      // NOTE: analysis now calls same-origin Nitro endpoints; keep this only if other APIs still need it.
       backendBaseUrl: process.env.NUXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:1337',
 
       // Supabase (client-side publishable key; RLS enforces per-user access)

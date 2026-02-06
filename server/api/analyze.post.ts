@@ -5,7 +5,7 @@ type AnalyzeBody = {
   detail?: 'low' | 'high' | 'auto'
 }
 
-export default defineEventHandler(async (event) => {
+export const analyzeHandler = async (event: any) => {
   const body = (await readBody<AnalyzeBody>(event)) ?? {}
   const imageDataUrl = String(body.imageDataUrl || '')
   const detail = (body.detail ?? 'auto') as 'low' | 'high' | 'auto'
@@ -78,4 +78,6 @@ export default defineEventHandler(async (event) => {
   } catch {
     return { ok: true, result: null, rawText: text }
   }
-})
+}
+
+export default defineEventHandler(analyzeHandler)
