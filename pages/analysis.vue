@@ -1,27 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 import { useUploadSession } from '~/composables/useUploadSession'
-import { useUploadLog } from '~/composables/useUploadLog'
-
-type AiNutritionResult = {
-  summary: string
-  items: Array<{
-    name: string
-    estimated_portion: string
-    calories_kcal: number
-    protein_g: number
-    carbs_g: number
-    fat_g: number
-  }>
-  total: {
-    calories_kcal: number
-    protein_g: number
-    carbs_g: number
-    fat_g: number
-  }
-  confidence: number
-  assumptions: string[]
-}
+import { useUploadLog, type AiNutritionResult } from '~/composables/useUploadLog'
 
 const route = useRoute()
 
@@ -87,7 +67,7 @@ function saveToLog() {
   if (!session.value) return
   if (saved.value) return
   try {
-    add(session.value)
+    add(session.value, { aiResult: aiResult.value, aiRaw: aiRaw.value || null })
     saved.value = true
   } catch (e) {
     console.error('[save] failed', e)

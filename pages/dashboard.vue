@@ -133,6 +133,23 @@ watch(
           <div class="preview-frame preview-frame--tight" style="margin-top: 12px">
             <img :src="item.imageDataUrl" :alt="item.fileName" />
           </div>
+
+          <div v-if="item.aiResult" class="pc-card" style="margin-top: 10px; border-radius: 16px; padding: 10px 12px">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap: 10px">
+              <div style="font-weight: 900; letter-spacing: -0.02em; font-size: 12px">AI Summary</div>
+              <div class="pc-muted" style="font-size: 11px; font-weight: 800">
+                {{ Math.round(item.aiResult.confidence * 100) }}%
+              </div>
+            </div>
+
+            <div class="pc-muted" style="margin-top: 6px; font-size: 12px; font-weight: 650; line-height: 1.4">
+              {{ item.aiResult.summary }}
+            </div>
+
+            <div class="pc-muted" style="margin-top: 8px; font-size: 12px; font-weight: 750">
+              {{ item.aiResult.total.calories_kcal }} kcal · P {{ item.aiResult.total.protein_g }}g · C {{ item.aiResult.total.carbs_g }}g · F {{ item.aiResult.total.fat_g }}g
+            </div>
+          </div>
         </section>
 
         <footer class="pc-muted" style="text-align:center; font-size: 11px; font-weight: 750; margin-top: 4px">
