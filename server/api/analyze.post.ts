@@ -47,6 +47,51 @@ export const analyzeHandler = async (event: any) => {
     },
     body: JSON.stringify({
       model: 'gpt-4.1-mini',
+      // Force strict JSON output.
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'nutrition_result',
+          strict: true,
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['summary', 'items', 'total', 'confidence', 'assumptions'],
+            properties: {
+              summary: { type: 'string' },
+              items: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['name', 'estimated_portion', 'calories_kcal', 'protein_g', 'carbs_g', 'fat_g'],
+                  properties: {
+                    name: { type: 'string' },
+                    estimated_portion: { type: 'string' },
+                    calories_kcal: { type: 'number' },
+                    protein_g: { type: 'number' },
+                    carbs_g: { type: 'number' },
+                    fat_g: { type: 'number' },
+                  },
+                },
+              },
+              total: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['calories_kcal', 'protein_g', 'carbs_g', 'fat_g'],
+                properties: {
+                  calories_kcal: { type: 'number' },
+                  protein_g: { type: 'number' },
+                  carbs_g: { type: 'number' },
+                  fat_g: { type: 'number' },
+                },
+              },
+              confidence: { type: 'number' },
+              assumptions: { type: 'array', 'items': { type: 'string' } },
+            },
+          },
+        },
+      },
       input: [
         {
           role: 'user',
