@@ -1,3 +1,5 @@
+import { useRuntimeConfig } from '#imports'
+
 let cachedKey: string | null = null
 
 export async function getOpenAIApiKey(): Promise<string> {
