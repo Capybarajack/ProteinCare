@@ -48,9 +48,9 @@ export const analyzeHandler = async (event: any) => {
     body: JSON.stringify({
       model: 'gpt-4.1-mini',
       // Force strict JSON output.
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
+      text: {
+        format: {
+          type: 'json_schema',
           name: 'nutrition_result',
           strict: true,
           schema: {
@@ -113,15 +113,25 @@ export const analyzeHandler = async (event: any) => {
     })
   }
 
-  const data = await res.json() as any
-  const text = String(data?.output_text ?? '')
+  const data = (await res.json()) as any
+
+  // Try to extract the text payload across API variants.
+  const text =
+    String(data?.output_text ?? '') ||
+    String(
+      (data?.output || [])
+        .flatMap((o: any) => o?.content || [])
+        .map((c: any) => c?.text)
+        .filter(Boolean)
+        .join('')
+    )
 
   // The model is instructed to return strict JSON, but still guard.
   try {
     const parsed = JSON.parse(text)
     return { ok: true, result: parsed, rawText: text }
   } catch {
-    return { ok: true, result: null, rawText: text }
+    return { ok: true, result: null, rawText: text || JSON.stringify(data).slice(0, 8000) }
   }
 }
 
