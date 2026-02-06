@@ -2,6 +2,8 @@
 import { computed, ref, onMounted } from 'vue'
 import { useUploadSession } from '~/composables/useUploadSession'
 import { useUploadLog, type AiNutritionResult } from '~/composables/useUploadLog'
+import { useSupabase } from '~/composables/useSupabase'
+import { useAuthUser } from '~/composables/useAuth'
 
 const route = useRoute()
 
@@ -18,8 +20,13 @@ useHead({ title: 'Analysis' })
 
 const session = useUploadSession()
 const { load, add } = useUploadLog()
+const supabase = useSupabase()
+const user = useAuthUser()
 
 const saved = ref(false)
+const isSaving = ref(false)
+const saveError = ref('')
+const savedEntryId = ref<string | null>(null)
 
 const isAnalyzing = ref(false)
 const aiError = ref('')
@@ -63,15 +70,85 @@ const sizeText = computed(() => {
   return `${(session.value.fileSize / (1024 * 1024)).toFixed(2)} MB`
 })
 
-function saveToLog() {
+async function saveToLog() {
   if (!session.value) return
   if (saved.value) return
+
+  saveError.value = ''
+
+  const u = user.value
+  if (!u?.id) {
+    saveError.value = '尚未登入，無法保存到資料庫'
+    return
+  }
+
+  const bucket = session.value.storageBucket || 'meal-photos'
+  const path = session.value.storagePath
+  if (!path) {
+    saveError.value = '找不到 Storage 路徑：請回到 Upload 重新上傳（確保已成功 Upload 到 Storage）'
+    return
+  }
+
+  isSaving.value = true
   try {
-    add(session.value, { aiResult: aiResult.value, aiRaw: aiRaw.value || null })
+    // 1) Insert entry
+    const { data: entry, error: entryError } = await supabase
+      .from('food_entries')
+      .insert({
+        user_id: u.id,
+        captured_at: new Date(session.value.createdAt).toISOString(),
+        image_bucket: bucket,
+        image_path: path,
+        image_mime_type: session.value.mimeType,
+        image_file_name: session.value.fileName,
+        image_file_size_bytes: session.value.fileSize,
+
+        ai_summary: aiResult.value?.summary ?? null,
+        ai_confidence: aiResult.value?.confidence ?? null,
+        ai_assumptions: aiResult.value?.assumptions ?? null,
+
+        total_calories_kcal: aiResult.value?.total?.calories_kcal ?? null,
+        total_protein_g: aiResult.value?.total?.protein_g ?? null,
+        total_carbs_g: aiResult.value?.total?.carbs_g ?? null,
+        total_fat_g: aiResult.value?.total?.fat_g ?? null,
+
+        raw_text: aiRaw.value || null,
+        result_json: aiResult.value ?? null,
+      })
+      .select('id')
+      .single()
+
+    if (entryError) throw entryError
+
+    // 2) Insert items (optional)
+    const items = aiResult.value?.items || []
+    if (items.length) {
+      const { error: itemsError } = await supabase.from('food_entry_items').insert(
+        items.map((it, idx) => ({
+          entry_id: entry.id,
+          user_id: u.id,
+          sort_order: idx,
+          name: it.name,
+          estimated_portion: it.estimated_portion,
+          calories_kcal: it.calories_kcal,
+          protein_g: it.protein_g,
+          carbs_g: it.carbs_g,
+          fat_g: it.fat_g,
+        }))
+      )
+      if (itemsError) throw itemsError
+    }
+
+    // 3) Save local dashboard log too
+    add(session.value, { aiResult: aiResult.value, aiRaw: aiRaw.value || null, dbEntryId: entry.id })
+
+    savedEntryId.value = entry.id
     saved.value = true
-  } catch (e) {
-    console.error('[save] failed', e)
-    aiError.value = 'Save 失敗：瀏覽器無法寫入本機儲存空間（localStorage）'
+  } catch (e: any) {
+    console.error('[save] db failed', e)
+    saveError.value = e?.message || '保存到資料庫失敗'
+  } finally {
+    isSaving.value = false
   }
 }
 
@@ -169,6 +246,13 @@ onMounted(async () => {
             <div style="padding: 12px 14px; color: rgba(20, 83, 45, 0.95); font-weight: 900; font-size: 13px; display:flex; align-items:center; gap: 10px">
               <span class="material-symbols-outlined">check_circle</span>
               已保存到 Dashboard
+              <span v-if="savedEntryId" class="pc-muted" style="font-size: 11px; font-weight: 850">(DB ✓)</span>
+            </div>
+          </div>
+
+          <div v-if="saveError" class="pc-card" style="margin-top: 12px; border-radius: 18px; border-color: rgba(239,68,68,0.22); background: rgba(239,68,68,0.06)">
+            <div style="padding: 12px 14px; color: rgba(185,28,28,0.95); font-weight: 800; font-size: 13px">
+              {{ saveError }}
             </div>
           </div>
 
@@ -272,11 +356,11 @@ onMounted(async () => {
           class="pc-btn pc-btn--primary"
           type="button"
           @click="saveToLog"
-          :disabled="saved"
-          :style="saved ? 'opacity:0.6; pointer-events:none' : ''"
+          :disabled="saved || isSaving"
+          :style="saved || isSaving ? 'opacity:0.6; pointer-events:none' : ''"
         >
-          <span class="material-symbols-outlined">{{ saved ? 'check_circle' : 'add_task' }}</span>
-          {{ saved ? 'Saved' : 'Save to Dashboard' }}
+          <span class="material-symbols-outlined">{{ saved ? 'check_circle' : isSaving ? 'progress_activity' : 'add_task' }}</span>
+          {{ saved ? 'Saved' : isSaving ? 'Saving…' : 'Save to Dashboard' }}
         </button>
         <div class="pc-grid2">
           <NuxtLink to="/upload" class="pc-btn" style="height: 52px">

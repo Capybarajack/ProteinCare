@@ -24,6 +24,7 @@ export type UploadLogItem = UploadSession & {
   id: string
   aiResult: AiNutritionResult | null
   aiRaw: string | null
+  dbEntryId: string | null
 }
 
 const STORAGE_KEY = 'protaincare_upload_logs'
@@ -49,6 +50,7 @@ export function useUploadLog() {
           ...item,
           aiResult: item?.aiResult ?? null,
           aiRaw: item?.aiRaw ?? null,
+          dbEntryId: item?.dbEntryId ?? null,
         }))
       : []
   }
@@ -63,6 +65,7 @@ export function useUploadLog() {
     aiData?: {
       aiResult: AiNutritionResult | null
       aiRaw: string | null
+      dbEntryId?: string | null
     }
   ) => {
     const item: UploadLogItem = {
@@ -70,6 +73,7 @@ export function useUploadLog() {
       id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
       aiResult: aiData?.aiResult ?? null,
       aiRaw: aiData?.aiRaw ?? null,
+      dbEntryId: aiData?.dbEntryId ?? null,
     }
     logs.value = [item, ...logs.value]
     persist()

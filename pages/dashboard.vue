@@ -149,6 +149,26 @@ watch(
             <div class="pc-muted" style="margin-top: 8px; font-size: 12px; font-weight: 750">
               {{ item.aiResult.total.calories_kcal }} kcal · P {{ item.aiResult.total.protein_g }}g · C {{ item.aiResult.total.carbs_g }}g · F {{ item.aiResult.total.fat_g }}g
             </div>
+
+            <details v-if="item.aiResult.items?.length" style="margin-top: 10px">
+              <summary class="pc-muted" style="font-size: 12px; font-weight: 900; cursor:pointer">Items</summary>
+              <div style="margin-top: 10px; display:grid; gap: 8px">
+                <div
+                  v-for="(it, idx) in item.aiResult.items"
+                  :key="idx"
+                  class="pc-card"
+                  style="border-radius: 14px; padding: 10px 12px"
+                >
+                  <div style="font-weight: 950; letter-spacing: -0.02em">{{ it.name }}</div>
+                  <div v-if="it.estimated_portion" class="pc-muted" style="font-size: 12px; font-weight: 750; margin-top: 2px">
+                    {{ it.estimated_portion }}
+                  </div>
+                  <div class="pc-muted" style="margin-top: 6px; font-size: 12px; font-weight: 750">
+                    {{ it.calories_kcal }} kcal · P {{ it.protein_g }}g · C {{ it.carbs_g }}g · F {{ it.fat_g }}g
+                  </div>
+                </div>
+              </div>
+            </details>
           </div>
         </section>
 
