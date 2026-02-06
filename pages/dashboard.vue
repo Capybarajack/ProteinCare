@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useUploadLog } from '~/composables/useUploadLog'
 
 const route = useRoute()
@@ -30,6 +30,13 @@ function clearAll() {
 onMounted(() => {
   load()
 })
+
+watch(
+  () => route.fullPath,
+  () => {
+    load()
+  }
+)
 </script>
 
 <template>

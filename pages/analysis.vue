@@ -85,8 +85,14 @@ const sizeText = computed(() => {
 
 function saveToLog() {
   if (!session.value) return
-  add(session.value)
-  saved.value = true
+  if (saved.value) return
+  try {
+    add(session.value)
+    saved.value = true
+  } catch (e) {
+    console.error('[save] failed', e)
+    aiError.value = 'Save 失敗：瀏覽器無法寫入本機儲存空間（localStorage）'
+  }
 }
 
 const didAutoStart = ref(false)
@@ -282,9 +288,15 @@ onMounted(async () => {
       aria-label="Actions"
     >
       <div style="display:grid; gap: 10px">
-        <button class="pc-btn pc-btn--primary" type="button" @click="saveToLog">
-          <span class="material-symbols-outlined">add_task</span>
-          Save to Dashboard
+        <button
+          class="pc-btn pc-btn--primary"
+          type="button"
+          @click="saveToLog"
+          :disabled="saved"
+          :style="saved ? 'opacity:0.6; pointer-events:none' : ''"
+        >
+          <span class="material-symbols-outlined">{{ saved ? 'check_circle' : 'add_task' }}</span>
+          {{ saved ? 'Saved' : 'Save to Dashboard' }}
         </button>
         <div class="pc-grid2">
           <NuxtLink to="/upload" class="pc-btn" style="height: 52px">
