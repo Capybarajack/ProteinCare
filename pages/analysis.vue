@@ -56,7 +56,10 @@ async function analyzeWithAI() {
       aiError.value = 'AI 回傳格式不是 JSON（已保留原始文字，可稍後調整提示詞/格式）'
     }
   } catch (e: any) {
-    aiError.value = e?.data?.statusMessage || e?.message || 'AI 分析失敗'
+    const statusMsg = e?.data?.statusMessage || e?.message || 'AI 分析失敗'
+    const openAiBody = e?.data?.data?.body
+    aiError.value = openAiBody ? `${statusMsg} :: ${String(openAiBody).slice(0, 300)}` : statusMsg
+    if (openAiBody && !aiRaw.value) aiRaw.value = String(openAiBody)
   } finally {
     isAnalyzing.value = false
   }

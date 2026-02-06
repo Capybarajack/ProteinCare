@@ -87,7 +87,7 @@ export const analyzeHandler = async (event: any) => {
                 },
               },
               confidence: { type: 'number' },
-              assumptions: { type: 'array', 'items': { type: 'string' } },
+              assumptions: { type: 'array', items: { type: 'string' } },
             },
           },
         },
@@ -109,7 +109,7 @@ export const analyzeHandler = async (event: any) => {
     throw createError({
       statusCode: 502,
       statusMessage: `OpenAI API error: ${res.status} ${res.statusText}`,
-      data: { body: errText.slice(0, 2000) },
+      data: { body: errText.slice(0, 8000) },
     })
   }
 
