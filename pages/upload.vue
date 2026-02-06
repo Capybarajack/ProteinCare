@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, computed } from 'vue'
 import { useUploadSession } from '~/composables/useUploadSession'
+import { useMealPhotoStorageUpload } from '~/composables/useMealPhotoStorageUpload'
 
 const route = useRoute()
 
@@ -16,6 +17,11 @@ definePageMeta({ middleware: 'requireAuth' })
 useHead({ title: 'Upload' })
 
 const session = useUploadSession()
+const { uploadMealPhoto } = useMealPhotoStorageUpload()
+
+const isUploading = ref(false)
+const uploadOk = ref(false)
+const uploadError = ref('')
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const isDragOver = ref(false)
@@ -55,6 +61,8 @@ function clear() {
   fileName.value = ''
   fileSizeBytes.value = 0
   clearError()
+  uploadOk.value = false
+  uploadError.value = ''
   if (fileInput.value) fileInput.value.value = ''
   session.value = null
 }
@@ -70,6 +78,8 @@ async function fileToDataUrl(file: File): Promise<string> {
 
 async function validateAndStore(file: File) {
   clearError()
+  uploadOk.value = false
+  uploadError.value = ''
 
   if (!file.type || !file.type.startsWith('image/')) {
     setError('Please select an image file (image/*).')
@@ -86,13 +96,32 @@ async function validateAndStore(file: File) {
   fileName.value = file.name
   fileSizeBytes.value = file.size
 
-  const dataUrl = await fileToDataUrl(file)
-  session.value = {
-    imageDataUrl: dataUrl,
-    fileName: file.name,
-    fileSize: file.size,
-    mimeType: file.type,
-    createdAt: Date.now(),
+  // 1) Upload to Supabase Storage
+  isUploading.value = true
+  try {
+    const { bucket, path } = await uploadMealPhoto(file)
+
+    // 2) Keep dataUrl for now (existing analysis flow) + persist storage refs
+    const dataUrl = await fileToDataUrl(file)
+
+    session.value = {
+      imageDataUrl: dataUrl,
+      fileName: file.name,
+      fileSize: file.size,
+      mimeType: file.type,
+      createdAt: Date.now(),
+      storageBucket: bucket,
+      storagePath: path,
+      uploadedAt: Date.now(),
+    }
+
+    uploadOk.value = true
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e)
+    uploadError.value = msg
+    uploadOk.value = false
+  } finally {
+    isUploading.value = false
   }
 }
 
@@ -187,6 +216,15 @@ onBeforeUnmount(() => {
                 {{ fileName }}
               </div>
               <div class="pc-muted" style="font-size: 12px; font-weight: 750">{{ fileSizeText }}</div>
+              <div v-if="isUploading" class="pc-muted" style="font-size: 11px; font-weight: 850; margin-top: 4px">
+                Uploading to Storage...
+              </div>
+              <div v-else-if="uploadOk" style="font-size: 11px; font-weight: 900; margin-top: 4px; color: rgba(16,185,129,0.95)">
+                Uploaded ✓ (Supabase Storage)
+              </div>
+              <div v-else-if="uploadError" style="font-size: 11px; font-weight: 900; margin-top: 4px; color: rgba(239,68,68,0.95)">
+                Upload failed: {{ uploadError }}
+              </div>
             </div>
             <button class="pc-btn" style="height: 42px; border-radius: 16px; padding: 0 14px" type="button" @click="clear">
               <span class="material-symbols-outlined" style="font-size: 18px">delete</span>
@@ -218,7 +256,7 @@ onBeforeUnmount(() => {
           <NuxtLink
             to="/analysis?autostart=1"
             class="pc-btn pc-btn--primary"
-            :style="!previewUrl ? 'opacity:0.45; pointer-events:none' : ''"
+            :style="!previewUrl || !uploadOk || isUploading ? 'opacity:0.45; pointer-events:none' : ''"
           >
             <span class="material-symbols-outlined">auto_awesome</span>
             Analyze with AI

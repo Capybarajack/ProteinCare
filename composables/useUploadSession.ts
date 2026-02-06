@@ -5,6 +5,11 @@ export type UploadSession = {
   fileSize: number
   mimeType: string
   createdAt: number
+
+  // Supabase Storage location (preferred long-term reference)
+  storageBucket?: string
+  storagePath?: string
+  uploadedAt?: number
 }
 
 /**
