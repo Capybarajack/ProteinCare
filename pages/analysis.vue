@@ -32,7 +32,7 @@ const navItems = [
   { to: '/dashboard', icon: 'dashboard', label: 'Log' },
 ]
 
-definePageMeta({ middleware: 'requireAuth' })
+definePageMeta({ middleware: 'require-auth' })
 
 useHead({ title: 'Analysis' })
 
