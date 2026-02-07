@@ -308,6 +308,17 @@ body {
   user-select: none;
 }
 
+/* For buttons that may have longer labels on small screens */
+.pc-btn--wrap {
+  height: auto;
+  min-height: 56px;
+  padding: 12px 14px;
+  flex-wrap: wrap;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.1;
+}
+
 .pc-btn:active {
   transform: scale(0.99);
 }

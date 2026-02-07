@@ -245,17 +245,17 @@ Tip: Analysis reads your latest upload session (localStorage / in-memory).
       <section style="margin-top: 12px">
         <div class="pc-grid2">
           <button
-            class="pc-btn"
+            class="pc-btn pc-btn--wrap"
             type="button"
             @click="openFilePicker"
           >
             <span class="material-symbols-outlined">image</span>
-Choose from library
+            Choose from library
           </button>
 
           <NuxtLink
             to="/analysis?autostart=1"
-            class="pc-btn pc-btn--primary"
+            class="pc-btn pc-btn--primary pc-btn--wrap"
             :style="!previewUrl || !uploadOk || isUploading ? 'opacity:0.45; pointer-events:none' : ''"
           >
             <span class="material-symbols-outlined">auto_awesome</span>
