@@ -35,17 +35,21 @@ export function useLoginPromptOnce() {
   async function ensureAuthedOrPrompt(nextPath: string): Promise<boolean> {
     if (user.value) return true
 
-    if (process.client) {
-      const key = 'pc_login_prompt_last_ymd'
-      const today = ymdLocal()
-      const last = localStorage.getItem(key)
+    if (import.meta.client) {
+      try {
+        const key = 'pc_login_prompt_last_ymd'
+        const today = ymdLocal()
+        const last = localStorage.getItem(key)
 
-      if (last === today) {
-        await navigateTo(`/login?next=${encodeURIComponent(nextPath)}`)
-        return false
+        if (last === today) {
+          await navigateTo(`/login?next=${encodeURIComponent(nextPath)}`)
+          return false
+        }
+
+        localStorage.setItem(key, today)
+      } catch {
+        // If localStorage is unavailable, fall back to prompting (best effort)
       }
-
-      localStorage.setItem(key, today)
     }
 
     state.value.nextPath = nextPath
