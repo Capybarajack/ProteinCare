@@ -301,31 +301,59 @@ onMounted(async () => {
                 <div class="pc-muted" style="font-size: 12px; font-weight: 750; margin-top: 4px">
                   {{ it.estimated_portion }}
                 </div>
-                <div style="margin-top: 8px; display:grid; grid-template-columns: repeat(4, 1fr); gap: 8px">
-                  <div style="text-align:center">
-                    <div style="font-weight: 950">{{ it.calories_kcal }}</div>
-                    <div class="pc-muted" style="font-size: 11px; font-weight: 750">kcal</div>
+                <!-- Protein-first item macros -->
+                <div style="margin-top: 10px; display:flex; align-items:baseline; justify-content:space-between; gap: 12px">
+                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">蛋白質</div>
+                  <div style="font-weight: 1000; letter-spacing:-0.03em; font-size: 22px; line-height: 1">
+                    {{ it.protein_g }}<span class="pc-muted" style="font-size: 11px; font-weight: 900; margin-left: 6px">克</span>
                   </div>
-                  <div style="text-align:center">
-                    <div style="font-weight: 950">{{ it.protein_g }}</div>
-                    <div class="pc-muted" style="font-size: 11px; font-weight: 750">P(g)</div>
+                </div>
+
+                <div style="margin-top: 10px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px">
+                  <div class="pc-card" style="border-radius: 14px; padding: 8px 10px; text-align:center">
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">熱量</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ it.calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">大卡</span></div>
                   </div>
-                  <div style="text-align:center">
-                    <div style="font-weight: 950">{{ it.carbs_g }}</div>
-                    <div class="pc-muted" style="font-size: 11px; font-weight: 750">C(g)</div>
+                  <div class="pc-card" style="border-radius: 14px; padding: 8px 10px; text-align:center">
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">碳水</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ it.carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
                   </div>
-                  <div style="text-align:center">
-                    <div style="font-weight: 950">{{ it.fat_g }}</div>
-                    <div class="pc-muted" style="font-size: 11px; font-weight: 750">F(g)</div>
+                  <div class="pc-card" style="border-radius: 14px; padding: 8px 10px; text-align:center">
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">脂肪</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ it.fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
                   </div>
                 </div>
               </div>
             </div>
 
             <div class="pc-card" style="margin-top: 12px; border-radius: 20px; padding: 12px 14px">
-              <div style="font-weight: 950; letter-spacing: -0.02em">Total</div>
-              <div class="pc-muted" style="font-size: 12px; font-weight: 750; margin-top: 6px">
-                {{ aiResult.total.calories_kcal }} kcal · P {{ aiResult.total.protein_g }}g · C {{ aiResult.total.carbs_g }}g · F {{ aiResult.total.fat_g }}g
+              <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: 10px">
+                <div style="font-weight: 950; letter-spacing: -0.02em">總營養</div>
+                <div class="pc-pill" style="letter-spacing:0.12em">TOTAL</div>
+              </div>
+
+              <!-- Protein-first hero -->
+              <div style="margin-top: 10px; display:flex; align-items:baseline; justify-content:space-between; gap: 12px">
+                <div class="pc-muted" style="font-size: 12px; font-weight: 900">蛋白質</div>
+                <div style="font-weight: 1000; letter-spacing:-0.04em; font-size: 28px; line-height: 1">
+                  {{ aiResult.total.protein_g }}<span class="pc-muted" style="font-size: 12px; font-weight: 900; margin-left: 6px">克</span>
+                </div>
+              </div>
+
+              <!-- Supporting macros -->
+              <div style="margin-top: 10px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px">
+                <div class="pc-card" style="border-radius: 16px; padding: 10px 12px">
+                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">熱量</div>
+                  <div style="font-weight: 950; margin-top: 2px">{{ aiResult.total.calories_kcal }}<span class="pc-muted" style="font-weight: 900; font-size: 11px; margin-left: 6px">大卡</span></div>
+                </div>
+                <div class="pc-card" style="border-radius: 16px; padding: 10px 12px">
+                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">碳水化合物</div>
+                  <div style="font-weight: 950; margin-top: 2px">{{ aiResult.total.carbs_g }}<span class="pc-muted" style="font-weight: 900; font-size: 11px; margin-left: 6px">克</span></div>
+                </div>
+                <div class="pc-card" style="border-radius: 16px; padding: 10px 12px">
+                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">脂肪</div>
+                  <div style="font-weight: 950; margin-top: 2px">{{ aiResult.total.fat_g }}<span class="pc-muted" style="font-weight: 900; font-size: 11px; margin-left: 6px">克</span></div>
+                </div>
               </div>
             </div>
 
