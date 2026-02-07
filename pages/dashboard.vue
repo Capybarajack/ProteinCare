@@ -248,12 +248,22 @@ async function saveBasicsToProfileSoon() {
       const goal = Number(proteinGoalG.value)
       const weight = weightKg.value == null ? null : Number(weightKg.value)
 
-      const payload: any = {}
-      if (Number.isFinite(goal) && goal > 0) payload.protein_goal_g = Math.round(goal)
-      payload.weight_kg = weight != null && Number.isFinite(weight) && weight > 0 ? weight : null
+      const payload: any = {
+        // Always include both fields in authed mode so saves are explicit.
+        protein_goal_g: Number.isFinite(goal) && goal > 0 ? Math.round(goal) : null,
+        weight_kg: weight != null && Number.isFinite(weight) && weight > 0 ? weight : null,
+      }
 
-      const { error } = await supabase.from('profiles').upsert({ id: u.id, ...payload }, { onConflict: 'id' })
+      const { data, error } = await supabase
+        .from('profiles')
+        .upsert({ id: u.id, ...payload }, { onConflict: 'id' })
+        .select('weight_kg, protein_goal_g')
+        .single()
       if (error) throw error
+
+      // Keep UI in sync with the DB values (and verify save succeeded)
+      if (data?.protein_goal_g != null) proteinGoalG.value = Math.round(Number(data.protein_goal_g))
+      if (data?.weight_kg != null) weightKg.value = Math.round(Number(data.weight_kg) * 10) / 10
     } catch (e) {
       // eslint-disable-next-line no-console
       console.warn('[dashboard] update profiles failed', e)
