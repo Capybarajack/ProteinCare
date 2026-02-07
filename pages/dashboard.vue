@@ -209,8 +209,15 @@ async function loadBasicsFromProfile() {
 
   if (error) throw error
 
-  if (data?.protein_goal_g != null) proteinGoalG.value = Math.round(Number(data.protein_goal_g))
-  if (data?.weight_kg != null) weightKg.value = Math.round(Number(data.weight_kg) * 10) / 10
+  // If profile row does not exist yet, create a minimal one, then return.
+  if (!data) {
+    const { error: insertErr } = await supabase.from('profiles').upsert({ id: u.id }, { onConflict: 'id' })
+    if (insertErr) throw insertErr
+    return
+  }
+
+  if (data.protein_goal_g != null) proteinGoalG.value = Math.round(Number(data.protein_goal_g))
+  if (data.weight_kg != null) weightKg.value = Math.round(Number(data.weight_kg) * 10) / 10
 }
 
 onMounted(() => {
@@ -245,7 +252,7 @@ async function saveBasicsToProfileSoon() {
       if (Number.isFinite(goal) && goal > 0) payload.protein_goal_g = Math.round(goal)
       payload.weight_kg = weight != null && Number.isFinite(weight) && weight > 0 ? weight : null
 
-      const { error } = await supabase.from('profiles').update(payload).eq('id', u.id)
+      const { error } = await supabase.from('profiles').upsert({ id: u.id, ...payload }, { onConflict: 'id' })
       if (error) throw error
     } catch (e) {
       // eslint-disable-next-line no-console
