@@ -168,16 +168,37 @@ const countText = computed(() => {
 
 // --- Protein goal / today progress (protein-first UX) ---
 const proteinGoalG = ref<number>(120)
+const weightKg = ref<number | null>(null)
 
 onMounted(() => {
   try {
-    const saved = localStorage.getItem('pc_protein_goal_g')
-    const n = Number(saved)
-    if (saved != null && Number.isFinite(n) && n > 0) proteinGoalG.value = Math.round(n)
+    const savedGoal = localStorage.getItem('pc_protein_goal_g')
+    const ng = Number(savedGoal)
+    if (savedGoal != null && Number.isFinite(ng) && ng > 0) proteinGoalG.value = Math.round(ng)
+  } catch {
+    // ignore
+  }
+
+  try {
+    const savedW = localStorage.getItem('pc_weight_kg')
+    const nw = Number(savedW)
+    if (savedW != null && Number.isFinite(nw) && nw > 0) weightKg.value = Math.round(nw * 10) / 10
   } catch {
     // ignore
   }
 })
+
+function gramsFor(weight: number | null, gPerKg: number) {
+  if (!weight) return null
+  return Math.round(weight * gPerKg)
+}
+
+function gramsRangeFor(weight: number | null, lo: number, hi: number) {
+  if (!weight) return null
+  const a = Math.round(weight * lo)
+  const b = Math.round(weight * hi)
+  return a === b ? `${a}` : `${a}–${b}`
+}
 
 watch(
   proteinGoalG,
@@ -185,6 +206,23 @@ watch(
     try {
       const n = Number(v)
       if (Number.isFinite(n) && n > 0) localStorage.setItem('pc_protein_goal_g', String(Math.round(n)))
+    } catch {
+      // ignore
+    }
+  },
+  { deep: false }
+)
+
+watch(
+  weightKg,
+  (v) => {
+    try {
+      const n = Number(v)
+      if (v == null) {
+        localStorage.removeItem('pc_weight_kg')
+        return
+      }
+      if (Number.isFinite(n) && n > 0) localStorage.setItem('pc_weight_kg', String(n))
     } catch {
       // ignore
     }
@@ -291,28 +329,85 @@ watch(
               <tr style="background: rgba(148, 163, 184, 0.10)">
                 <th style="text-align:left; padding: 10px 12px; font-weight: 950">族群 / 目標</th>
                 <th style="text-align:right; padding: 10px 12px; font-weight: 950; white-space: nowrap">建議攝取量</th>
+                <th style="text-align:right; padding: 10px 12px; font-weight: 950; white-space: nowrap">
+                  <div style="display:flex; align-items:center; justify-content:flex-end; gap: 8px">
+                    <span class="pc-muted" style="font-weight: 900">體重</span>
+                    <input
+                      v-model.number="weightKg"
+                      inputmode="decimal"
+                      type="number"
+                      min="20"
+                      max="300"
+                      step="0.5"
+                      placeholder="kg"
+                      aria-label="體重 (kg)"
+                      style="width: 72px; height: 28px; padding: 0 10px; border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.28); background: rgba(255,255,255,0.65); font-weight: 900; outline: none"
+                    />
+                    <span class="pc-muted" style="font-weight: 900">kg</span>
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td style="padding: 10px 12px; font-weight: 850">一般成人（久坐）</td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 950">0.8 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
+                <td style="padding: 10px 12px; text-align:right; font-weight: 1000">
+                  <template v-if="weightKg">
+                    {{ gramsFor(weightKg, 0.8) }} <span class="pc-muted" style="font-weight: 900">克/日</span>
+                  </template>
+                  <template v-else>
+                    <span class="pc-muted" style="font-weight: 900">—</span>
+                  </template>
+                </td>
               </tr>
               <tr style="background: rgba(148, 163, 184, 0.06)">
                 <td style="padding: 10px 12px; font-weight: 850">一般有運動</td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.0–1.2 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
+                <td style="padding: 10px 12px; text-align:right; font-weight: 1000">
+                  <template v-if="weightKg">
+                    {{ gramsRangeFor(weightKg, 1.0, 1.2) }} <span class="pc-muted" style="font-weight: 900">克/日</span>
+                  </template>
+                  <template v-else>
+                    <span class="pc-muted" style="font-weight: 900">—</span>
+                  </template>
+                </td>
               </tr>
               <tr>
                 <td style="padding: 10px 12px; font-weight: 850">重量訓練 / 增肌</td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.6–2.2 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
+                <td style="padding: 10px 12px; text-align:right; font-weight: 1000">
+                  <template v-if="weightKg">
+                    {{ gramsRangeFor(weightKg, 1.6, 2.2) }} <span class="pc-muted" style="font-weight: 900">克/日</span>
+                  </template>
+                  <template v-else>
+                    <span class="pc-muted" style="font-weight: 900">—</span>
+                  </template>
+                </td>
               </tr>
               <tr style="background: rgba(148, 163, 184, 0.06)">
                 <td style="padding: 10px 12px; font-weight: 850">減脂期（保肌）</td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.8–2.4 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
+                <td style="padding: 10px 12px; text-align:right; font-weight: 1000">
+                  <template v-if="weightKg">
+                    {{ gramsRangeFor(weightKg, 1.8, 2.4) }} <span class="pc-muted" style="font-weight: 900">克/日</span>
+                  </template>
+                  <template v-else>
+                    <span class="pc-muted" style="font-weight: 900">—</span>
+                  </template>
+                </td>
               </tr>
               <tr>
                 <td style="padding: 10px 12px; font-weight: 850">高齡者</td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.2–1.5 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
+                <td style="padding: 10px 12px; text-align:right; font-weight: 1000">
+                  <template v-if="weightKg">
+                    {{ gramsRangeFor(weightKg, 1.2, 1.5) }} <span class="pc-muted" style="font-weight: 900">克/日</span>
+                  </template>
+                  <template v-else>
+                    <span class="pc-muted" style="font-weight: 900">—</span>
+                  </template>
+                </td>
               </tr>
             </tbody>
           </table>
