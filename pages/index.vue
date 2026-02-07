@@ -21,22 +21,22 @@ const navItems = [
 const steps = [
   {
     icon: 'photo_camera',
-    title: '上傳餐點照片',
-    desc: '從相簿選擇或拖曳上傳，先預覽確認。',
+    title: 'Upload a meal photo',
+    desc: 'Pick from your library or drag & drop. Preview before saving.',
   },
   {
     icon: 'auto_awesome',
-    title: '一鍵 AI 分析',
-    desc: '自動跳轉到 Analysis 並開始分析（有 token 成本提示）。',
+    title: 'AI nutrition breakdown',
+    desc: 'Jump to Analysis and extract protein + supporting macros (tokens apply).',
   },
   {
     icon: 'history',
-    title: '保存到紀錄',
-    desc: '存到 Dashboard，之後可快速回顧。',
+    title: 'Save & review',
+    desc: 'Store it in your log so you can track your protein consistency over time.',
   },
 ]
 
-useHead({ title: 'ProtainCare' })
+useHead({ title: 'ProteinCare' })
 
 const session = useUploadSession()
 
@@ -54,13 +54,13 @@ const lastUploadMeta = computed(() => {
   <div class="pc-frame">
     <header class="pc-topbar">
       <div class="pc-topbar-row">
-        <NuxtLink to="/" class="pc-brand" aria-label="ProtainCare Home">
+        <NuxtLink to="/" class="pc-brand" aria-label="ProteinCare Home">
           <div class="pc-brand-mark" aria-hidden="true">
             <span class="material-symbols-outlined">health_and_safety</span>
           </div>
           <div>
-            <div class="pc-brand-title">ProtainCare</div>
-            <div class="pc-brand-sub">時尚手機介面 · 純前端</div>
+            <div class="pc-brand-title">ProteinCare</div>
+            <div class="pc-brand-sub">Protein-first tracking · Health-focused</div>
           </div>
         </NuxtLink>
 
@@ -92,25 +92,25 @@ const lastUploadMeta = computed(() => {
         </div>
 
         <h1 class="pc-h1">
-          先拍一張
+          Snap a meal
           <br />
-          再交給 AI
+          hit your protein
         </h1>
 
         <p class="pc-muted" style="margin: 0; font-weight: 650; line-height: 1.45">
-          用「手機 App」的方式把上傳、分析、紀錄串起來。
+          ProteinCare turns photos into a protein-focused log—simple, fast, and consistent.
           <br />
-          不走 Bootstrap 風，整體保持乾淨、俐落、帶一點科技感。
+          Built for protein intake and lightweight health management.
         </p>
 
         <div class="pc-grid2" style="margin-top: 16px">
           <NuxtLink to="/upload" class="pc-btn pc-btn--primary">
             <span class="material-symbols-outlined">cloud_upload</span>
-            立即上傳
+            Upload now
           </NuxtLink>
           <NuxtLink to="/dashboard" class="pc-btn pc-btn--ghost">
             <span class="material-symbols-outlined">dashboard</span>
-            查看紀錄
+            View your log
           </NuxtLink>
         </div>
 
@@ -119,8 +119,8 @@ const lastUploadMeta = computed(() => {
       <section style="margin-top: 16px">
         <div style="display:flex; align-items:flex-end; justify-content:space-between; padding: 0 4px 10px">
           <div>
-            <div style="font-weight: 950; letter-spacing:-0.03em; font-size: 18px">流程</div>
-            <div class="pc-muted" style="font-size: 12px; font-weight: 800">三步完成</div>
+            <div style="font-weight: 950; letter-spacing:-0.03em; font-size: 18px">Workflow</div>
+            <div class="pc-muted" style="font-size: 12px; font-weight: 800">3 steps to log protein</div>
           </div>
           <span class="pc-muted" style="font-size: 11px; font-weight: 900; letter-spacing: 0.08em">MOBILE</span>
         </div>

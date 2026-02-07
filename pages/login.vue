@@ -62,7 +62,7 @@ async function signOut() {
       <section class="pc-card pc-card-pad">
         <div style="font-weight: 950; letter-spacing: -0.02em; font-size: 18px">Sign in</div>
         <p class="pc-muted" style="margin-top: 8px; font-size: 13px; font-weight: 650; line-height: 1.45">
-          使用 Google 登入後，才能把每日紀錄寫入 Supabase（RLS 會保護你的資料）。
+          Sign in with Google to sync your protein goals, weight, and daily meal logs to Supabase (protected by RLS).
         </p>
 
         <div v-if="user" class="pc-card" style="margin-top: 12px; border-radius: 18px">

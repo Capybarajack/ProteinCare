@@ -63,7 +63,7 @@ function sizeMb(bytes: number) {
 
 function clearAll() {
   if (isAuthed.value) {
-    alert('已登入模式下：目前只顯示資料庫紀錄。刪除資料庫資料尚未在前端提供（避免誤刪）。')
+    alert('You are in signed-in mode: this screen shows database records only. Deleting database data is not available here to prevent accidental loss.')
     return
   }
 
@@ -141,7 +141,7 @@ async function loadFromDb() {
   } catch (e: any) {
     // eslint-disable-next-line no-console
     console.error('[dashboard] load db failed', e)
-    dbError.value = e?.message || '讀取資料庫失敗'
+    dbError.value = e?.message || 'Failed to load from database'
     dbEntries.value = []
   } finally {
     isDbLoading.value = false
@@ -400,8 +400,8 @@ watch(
       <section class="pc-card" style="border-radius: 20px; padding: 12px 14px; margin: 0 0 12px">
         <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: 12px">
           <div>
-            <div style="font-weight: 950; letter-spacing:-0.03em; font-size: 15px">每公斤體重需要多少蛋白質</div>
-            <div class="pc-muted" style="margin-top: 4px; font-size: 12px; font-weight: 750">以「g / kg」為基準（參考範圍）</div>
+            <div style="font-weight: 950; letter-spacing:-0.03em; font-size: 15px">Protein per kilogram of body weight</div>
+            <div class="pc-muted" style="margin-top: 4px; font-size: 12px; font-weight: 750">Reference ranges in grams per kg (g/kg)</div>
           </div>
           <div class="pc-pill" style="letter-spacing:0.12em">GUIDE</div>
         </div>
@@ -410,11 +410,11 @@ watch(
           <table style="width:100%; border-collapse: collapse; font-size: 12px">
             <thead>
               <tr style="background: rgba(148, 163, 184, 0.10)">
-                <th style="text-align:left; padding: 10px 12px; font-weight: 950">族群 / 目標</th>
-                <th style="text-align:right; padding: 10px 12px; font-weight: 950; white-space: nowrap">建議攝取量</th>
+                <th style="text-align:left; padding: 10px 12px; font-weight: 950">Group / goal</th>
+                <th style="text-align:right; padding: 10px 12px; font-weight: 950; white-space: nowrap">Target (g/kg)</th>
                 <th style="text-align:right; padding: 10px 12px; font-weight: 950; white-space: nowrap">
                   <div style="display:flex; align-items:center; justify-content:flex-end; gap: 8px">
-                    <span class="pc-muted" style="font-weight: 900">體重</span>
+                    <span class="pc-muted" style="font-weight: 900">Weight</span>
                     <input
                       v-model.number="weightKg"
                       inputmode="decimal"
@@ -423,7 +423,7 @@ watch(
                       max="300"
                       step="0.5"
                       placeholder="kg"
-                      aria-label="體重 (kg)"
+                      aria-label="Weight (kg)"
                       style="width: 72px; height: 28px; padding: 0 10px; border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.28); background: rgba(255,255,255,0.65); font-weight: 900; outline: none"
                     />
                     <span class="pc-muted" style="font-weight: 900">kg</span>
@@ -433,11 +433,11 @@ watch(
             </thead>
             <tbody>
               <tr>
-                <td style="padding: 10px 12px; font-weight: 850">一般成人（久坐）</td>
+                <td style="padding: 10px 12px; font-weight: 850">General adult (sedentary)</td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 950">0.8 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 1000">
                   <template v-if="weightKg">
-                    {{ gramsFor(weightKg, 0.8) }} <span class="pc-muted" style="font-weight: 900">克/日</span>
+                    {{ gramsFor(weightKg, 0.8) }} <span class="pc-muted" style="font-weight: 900">g/day</span>
                   </template>
                   <template v-else>
                     <span class="pc-muted" style="font-weight: 900">—</span>
@@ -445,11 +445,11 @@ watch(
                 </td>
               </tr>
               <tr style="background: rgba(148, 163, 184, 0.06)">
-                <td style="padding: 10px 12px; font-weight: 850">一般有運動</td>
+                <td style="padding: 10px 12px; font-weight: 850">Regular exercise</td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.0–1.2 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 1000">
                   <template v-if="weightKg">
-                    {{ gramsRangeFor(weightKg, 1.0, 1.2) }} <span class="pc-muted" style="font-weight: 900">克/日</span>
+                    {{ gramsRangeFor(weightKg, 1.0, 1.2) }} <span class="pc-muted" style="font-weight: 900">g/day</span>
                   </template>
                   <template v-else>
                     <span class="pc-muted" style="font-weight: 900">—</span>
@@ -457,11 +457,11 @@ watch(
                 </td>
               </tr>
               <tr>
-                <td style="padding: 10px 12px; font-weight: 850">重量訓練 / 增肌</td>
+                <td style="padding: 10px 12px; font-weight: 850">Resistance training / muscle gain</td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.6–2.2 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 1000">
                   <template v-if="weightKg">
-                    {{ gramsRangeFor(weightKg, 1.6, 2.2) }} <span class="pc-muted" style="font-weight: 900">克/日</span>
+                    {{ gramsRangeFor(weightKg, 1.6, 2.2) }} <span class="pc-muted" style="font-weight: 900">g/day</span>
                   </template>
                   <template v-else>
                     <span class="pc-muted" style="font-weight: 900">—</span>
@@ -469,11 +469,11 @@ watch(
                 </td>
               </tr>
               <tr style="background: rgba(148, 163, 184, 0.06)">
-                <td style="padding: 10px 12px; font-weight: 850">減脂期（保肌）</td>
+                <td style="padding: 10px 12px; font-weight: 850">Cutting phase (preserve muscle)</td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.8–2.4 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 1000">
                   <template v-if="weightKg">
-                    {{ gramsRangeFor(weightKg, 1.8, 2.4) }} <span class="pc-muted" style="font-weight: 900">克/日</span>
+                    {{ gramsRangeFor(weightKg, 1.8, 2.4) }} <span class="pc-muted" style="font-weight: 900">g/day</span>
                   </template>
                   <template v-else>
                     <span class="pc-muted" style="font-weight: 900">—</span>
@@ -481,11 +481,11 @@ watch(
                 </td>
               </tr>
               <tr>
-                <td style="padding: 10px 12px; font-weight: 850">高齡者</td>
+                <td style="padding: 10px 12px; font-weight: 850">Older adults</td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.2–1.5 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
                 <td style="padding: 10px 12px; text-align:right; font-weight: 1000">
                   <template v-if="weightKg">
-                    {{ gramsRangeFor(weightKg, 1.2, 1.5) }} <span class="pc-muted" style="font-weight: 900">克/日</span>
+                    {{ gramsRangeFor(weightKg, 1.2, 1.5) }} <span class="pc-muted" style="font-weight: 900">g/day</span>
                   </template>
                   <template v-else>
                     <span class="pc-muted" style="font-weight: 900">—</span>
@@ -499,7 +499,7 @@ watch(
 
       <div style="display:flex; align-items:flex-end; justify-content:space-between; padding: 0 4px 10px">
         <div>
-          <div style="font-weight: 950; letter-spacing:-0.03em; font-size: 18px">紀錄</div>
+          <div style="font-weight: 950; letter-spacing:-0.03em; font-size: 18px">Log</div>
           <div class="pc-muted" style="font-size: 12px; font-weight: 750">{{ countText }}</div>
         </div>
 
@@ -512,7 +512,7 @@ watch(
           :style="(isAuthed ? true : !logs.length) ? 'opacity:0.4; pointer-events:none' : ''"
         >
           <span class="material-symbols-outlined" style="font-size: 18px">delete</span>
-          清空
+Clear
         </button>
       </div>
 
@@ -520,18 +520,18 @@ watch(
       <section class="pc-card" style="border-radius: 20px; padding: 12px 14px; margin: 0 0 12px">
         <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: 12px">
           <div style="min-width:0">
-            <div class="pc-muted" style="font-size: 11px; font-weight: 900">今日（{{ todayLabel }}）蛋白質累積</div>
+            <div class="pc-muted" style="font-size: 11px; font-weight: 900">Today's protein total ({{ todayLabel }})</div>
             <div style="margin-top: 6px; display:flex; align-items:baseline; gap: 8px">
               <div style="font-weight: 1100; letter-spacing:-0.05em; font-size: 28px; line-height: 1">
                 {{ Math.round(todayProteinG) }}
               </div>
-              <div class="pc-muted" style="font-size: 12px; font-weight: 900">克</div>
-              <div class="pc-muted" style="font-size: 12px; font-weight: 850">/ 目標 {{ proteinGoalG }} 克</div>
+              <div class="pc-muted" style="font-size: 12px; font-weight: 900">g</div>
+              <div class="pc-muted" style="font-size: 12px; font-weight: 850">/ goal {{ proteinGoalG }} g</div>
             </div>
           </div>
 
           <div style="text-align:right">
-            <div class="pc-muted" style="font-size: 11px; font-weight: 900">達成率</div>
+            <div class="pc-muted" style="font-size: 11px; font-weight: 900">Progress</div>
             <div style="margin-top: 6px; font-weight: 1000; letter-spacing:-0.03em">
               {{ Math.round(goalPct * 100) }}%
             </div>
@@ -553,7 +553,7 @@ watch(
           </div>
 
           <div style="margin-top: 10px; display:flex; align-items:center; justify-content:space-between; gap: 10px">
-            <div class="pc-muted" style="font-size: 11px; font-weight: 850">目標蛋白質</div>
+            <div class="pc-muted" style="font-size: 11px; font-weight: 850">Protein goal</div>
             <div style="display:flex; align-items:center; gap: 10px">
               <input
                 v-model.number="proteinGoalG"
@@ -564,7 +564,7 @@ watch(
                 aria-label="Protein goal"
                 style="width: 160px"
               />
-              <div class="pc-pill" style="min-width: 74px; justify-content:center">{{ proteinGoalG }} 克</div>
+              <div class="pc-pill" style="min-width: 74px; justify-content:center">{{ proteinGoalG }} g</div>
             </div>
           </div>
         </div>
@@ -592,14 +592,14 @@ watch(
               <span class="material-symbols-outlined">history</span>
             </div>
             <div style="flex:1">
-              <div style="font-weight: 950; letter-spacing: -0.02em">尚無資料庫紀錄</div>
+              <div style="font-weight: 950; letter-spacing: -0.02em">No database records yet</div>
               <div class="pc-muted" style="font-size: 13px; font-weight: 650; margin-top: 6px; line-height: 1.4">
-                去 Upload 上傳一張照片，然後在 Analysis 點「Save to Dashboard」。
+                Upload a meal photo, run Analysis, then tap “Save to Dashboard” to start tracking protein.
               </div>
               <div style="margin-top: 12px">
                 <NuxtLink to="/upload" class="pc-btn pc-btn--primary" style="height: 48px; border-radius: 18px">
                   <span class="material-symbols-outlined">cloud_upload</span>
-                  前往 Upload
+                  Go to Upload
                 </NuxtLink>
               </div>
             </div>
@@ -639,24 +639,24 @@ watch(
 
               <div v-if="entry.total_protein_g != null" class="pc-card" style="margin-top: 10px; border-radius: 14px; padding: 10px 12px">
                 <div style="display:flex; align-items:baseline; justify-content:space-between; gap: 12px">
-                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">蛋白質</div>
+                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">Protein</div>
                   <div style="font-weight: 1000; letter-spacing:-0.04em; font-size: 22px; line-height: 1">
-                    {{ entry.total_protein_g }}<span class="pc-muted" style="font-size: 11px; font-weight: 900; margin-left: 6px">克</span>
+                    {{ entry.total_protein_g }}<span class="pc-muted" style="font-size: 11px; font-weight: 900; margin-left: 6px">grams</span>
                   </div>
                 </div>
 
                 <div style="margin-top: 10px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px">
                   <div class="pc-card" style="border-radius: 12px; padding: 8px 10px; text-align:center">
-                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">熱量</div>
-                    <div style="font-weight: 950; margin-top: 2px">{{ entry.total_calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">大卡</span></div>
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">Calories</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ entry.total_calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">kcal</span></div>
                   </div>
                   <div class="pc-card" style="border-radius: 12px; padding: 8px 10px; text-align:center">
-                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">碳水化合物</div>
-                    <div style="font-weight: 950; margin-top: 2px">{{ entry.total_carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">Carbohydrates</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ entry.total_carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">grams</span></div>
                   </div>
                   <div class="pc-card" style="border-radius: 12px; padding: 8px 10px; text-align:center">
-                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">脂肪</div>
-                    <div style="font-weight: 950; margin-top: 2px">{{ entry.total_fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">Fat</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ entry.total_fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">grams</span></div>
                   </div>
                 </div>
               </div>
@@ -677,24 +677,24 @@ watch(
 
                     <div class="pc-card" style="margin-top: 8px; border-radius: 12px; padding: 8px 10px">
                       <div style="display:flex; align-items:baseline; justify-content:space-between; gap: 10px">
-                        <div class="pc-muted" style="font-size: 10px; font-weight: 900">蛋白質</div>
+                        <div class="pc-muted" style="font-size: 10px; font-weight: 900">Protein</div>
                         <div style="font-weight: 1000; letter-spacing:-0.03em; font-size: 18px; line-height: 1">
-                          {{ it.protein_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 5px">克</span>
+                          {{ it.protein_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 5px">grams</span>
                         </div>
                       </div>
 
                       <div style="margin-top: 8px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 6px">
                         <div style="text-align:center">
-                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">熱量</div>
-                          <div style="font-weight: 900; margin-top: 2px">{{ it.calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">大卡</span></div>
+                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">Calories</div>
+                          <div style="font-weight: 900; margin-top: 2px">{{ it.calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">kcal</span></div>
                         </div>
                         <div style="text-align:center">
-                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">碳水</div>
-                          <div style="font-weight: 900; margin-top: 2px">{{ it.carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
+                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">Carbohydrates</div>
+                          <div style="font-weight: 900; margin-top: 2px">{{ it.carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">grams</span></div>
                         </div>
                         <div style="text-align:center">
-                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">脂肪</div>
-                          <div style="font-weight: 900; margin-top: 2px">{{ it.fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
+                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">Fat</div>
+                          <div style="font-weight: 900; margin-top: 2px">{{ it.fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">grams</span></div>
                         </div>
                       </div>
                     </div>
@@ -721,14 +721,14 @@ watch(
               <span class="material-symbols-outlined">history</span>
             </div>
             <div style="flex:1">
-              <div style="font-weight: 950; letter-spacing: -0.02em">尚無保存紀錄</div>
+              <div style="font-weight: 950; letter-spacing: -0.02em">No saved records yet</div>
               <div class="pc-muted" style="font-size: 13px; font-weight: 650; margin-top: 6px; line-height: 1.4">
-                去 Upload 上傳一張照片，然後在 Analysis 點「Save to Dashboard」。
+                Upload a meal photo, run Analysis, then tap “Save to Dashboard” to build your protein log.
               </div>
               <div style="margin-top: 12px">
                 <NuxtLink to="/upload" class="pc-btn pc-btn--primary" style="height: 48px; border-radius: 18px">
                   <span class="material-symbols-outlined">cloud_upload</span>
-                  前往 Upload
+                  Go to Upload
                 </NuxtLink>
               </div>
             </div>
@@ -768,24 +768,24 @@ watch(
 
               <div class="pc-card" style="margin-top: 10px; border-radius: 14px; padding: 10px 12px">
                 <div style="display:flex; align-items:baseline; justify-content:space-between; gap: 12px">
-                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">蛋白質</div>
+                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">Protein</div>
                   <div style="font-weight: 1000; letter-spacing:-0.04em; font-size: 22px; line-height: 1">
-                    {{ item.aiResult.total.protein_g }}<span class="pc-muted" style="font-size: 11px; font-weight: 900; margin-left: 6px">克</span>
+                    {{ item.aiResult.total.protein_g }}<span class="pc-muted" style="font-size: 11px; font-weight: 900; margin-left: 6px">grams</span>
                   </div>
                 </div>
 
                 <div style="margin-top: 10px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px">
                   <div class="pc-card" style="border-radius: 12px; padding: 8px 10px; text-align:center">
-                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">熱量</div>
-                    <div style="font-weight: 950; margin-top: 2px">{{ item.aiResult.total.calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">大卡</span></div>
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">Calories</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ item.aiResult.total.calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">kcal</span></div>
                   </div>
                   <div class="pc-card" style="border-radius: 12px; padding: 8px 10px; text-align:center">
-                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">碳水化合物</div>
-                    <div style="font-weight: 950; margin-top: 2px">{{ item.aiResult.total.carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">Carbohydrates</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ item.aiResult.total.carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">grams</span></div>
                   </div>
                   <div class="pc-card" style="border-radius: 12px; padding: 8px 10px; text-align:center">
-                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">脂肪</div>
-                    <div style="font-weight: 950; margin-top: 2px">{{ item.aiResult.total.fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">Fat</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ item.aiResult.total.fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">grams</span></div>
                   </div>
                 </div>
               </div>
@@ -806,24 +806,24 @@ watch(
 
                     <div class="pc-card" style="margin-top: 8px; border-radius: 12px; padding: 8px 10px">
                       <div style="display:flex; align-items:baseline; justify-content:space-between; gap: 10px">
-                        <div class="pc-muted" style="font-size: 10px; font-weight: 900">蛋白質</div>
+                        <div class="pc-muted" style="font-size: 10px; font-weight: 900">Protein</div>
                         <div style="font-weight: 1000; letter-spacing:-0.03em; font-size: 18px; line-height: 1">
-                          {{ it.protein_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 5px">克</span>
+                          {{ it.protein_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 5px">grams</span>
                         </div>
                       </div>
 
                       <div style="margin-top: 8px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 6px">
                         <div style="text-align:center">
-                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">熱量</div>
-                          <div style="font-weight: 900; margin-top: 2px">{{ it.calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">大卡</span></div>
+                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">Calories</div>
+                          <div style="font-weight: 900; margin-top: 2px">{{ it.calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">kcal</span></div>
                         </div>
                         <div style="text-align:center">
-                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">碳水</div>
-                          <div style="font-weight: 900; margin-top: 2px">{{ it.carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
+                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">Carbohydrates</div>
+                          <div style="font-weight: 900; margin-top: 2px">{{ it.carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">grams</span></div>
                         </div>
                         <div style="text-align:center">
-                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">脂肪</div>
-                          <div style="font-weight: 900; margin-top: 2px">{{ it.fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
+                          <div class="pc-muted" style="font-size: 10px; font-weight: 900">Fat</div>
+                          <div style="font-weight: 900; margin-top: 2px">{{ it.fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">grams</span></div>
                         </div>
                       </div>
                     </div>
@@ -834,7 +834,7 @@ watch(
           </section>
 
           <footer class="pc-muted" style="text-align:center; font-size: 11px; font-weight: 750; margin-top: 4px">
-            Storage key: <code>protaincare_upload_logs</code>
+            Storage key (legacy): <code>protaincare_upload_logs</code>
           </footer>
         </div>
       </template>

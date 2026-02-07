@@ -53,10 +53,10 @@ async function analyzeWithAI() {
     aiResult.value = resp.result
 
     if (!resp.result) {
-      aiError.value = 'AI 回傳格式不是 JSON（已保留原始文字，可稍後調整提示詞/格式）'
+      aiError.value = 'The AI response was not valid JSON. Raw text has been preserved so you can refine the prompt/format later.'
     }
   } catch (e: any) {
-    const statusMsg = e?.data?.statusMessage || e?.message || 'AI 分析失敗'
+    const statusMsg = e?.data?.statusMessage || e?.message || 'AI analysis failed'
     const openAiBody = e?.data?.data?.body
     aiError.value = openAiBody ? `${statusMsg} :: ${String(openAiBody).slice(0, 300)}` : statusMsg
     if (openAiBody && !aiRaw.value) aiRaw.value = String(openAiBody)
@@ -78,14 +78,14 @@ async function saveToLog() {
 
   const u = user.value
   if (!u?.id) {
-    saveError.value = '尚未登入，無法保存到資料庫'
+    saveError.value = 'You are not signed in. Sign in to save your protein log to the database.'
     return
   }
 
   const bucket = session.value.storageBucket || 'meal-photos'
   const path = session.value.storagePath
   if (!path) {
-    saveError.value = '找不到 Storage 路徑：請回到 Upload 重新上傳（確保已成功 Upload 到 Storage）'
+    saveError.value = 'Missing Storage path. Go back to Upload and upload again (make sure Storage upload succeeded).'
     return
   }
 
@@ -146,7 +146,7 @@ async function saveToLog() {
     saved.value = true
   } catch (e: any) {
     console.error('[save] db failed', e)
-    saveError.value = e?.message || '保存到資料庫失敗'
+    saveError.value = e?.message || 'Failed to save to the database'
   } finally {
     isSaving.value = false
   }
@@ -194,14 +194,14 @@ onMounted(async () => {
             <span class="material-symbols-outlined">warning</span>
           </div>
           <div>
-            <div style="font-weight: 950; letter-spacing: -0.02em">找不到上傳的圖片</div>
+            <div style="font-weight: 950; letter-spacing: -0.02em">No uploaded photo found</div>
             <div class="pc-muted" style="font-size: 13px; font-weight: 650; margin-top: 6px">
-              請先到 Upload 選擇圖片。
+              Upload a meal photo first to get a protein-focused breakdown.
             </div>
             <div style="margin-top: 12px">
               <NuxtLink to="/upload" class="pc-btn pc-btn--primary" style="height: 48px; border-radius: 18px">
                 <span class="material-symbols-outlined">cloud_upload</span>
-                前往 Upload
+Go to Upload
               </NuxtLink>
             </div>
           </div>
@@ -245,7 +245,7 @@ onMounted(async () => {
           <div v-if="saved" class="pc-card" style="margin-top: 12px; border-radius: 18px; border-color: rgba(134,163,143,0.22); background: rgba(134,163,143,0.10)">
             <div style="padding: 12px 14px; color: rgba(20, 83, 45, 0.95); font-weight: 900; font-size: 13px; display:flex; align-items:center; gap: 10px">
               <span class="material-symbols-outlined">check_circle</span>
-              已保存到 Dashboard
+Saved to Dashboard
               <span v-if="savedEntryId" class="pc-muted" style="font-size: 11px; font-weight: 850">(DB ✓)</span>
             </div>
           </div>
@@ -270,7 +270,7 @@ onMounted(async () => {
             </button>
 
             <p class="pc-muted" style="margin: 10px 6px 0; font-size: 11px; font-weight: 750; text-align:center">
-              會呼叫 OpenAI Vision API（有 token 成本）。
+This calls the OpenAI Vision API (tokens apply).
             </p>
           </div>
 
@@ -283,7 +283,7 @@ onMounted(async () => {
           <div v-if="aiResult" class="pc-card pc-card-pad" style="margin-top: 12px">
             <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: 10px">
               <div style="min-width:0">
-                <div style="font-weight: 950; letter-spacing: -0.02em">AI 結果</div>
+                <div style="font-weight: 950; letter-spacing: -0.02em">AI results</div>
                 <div class="pc-muted" style="font-size: 12px; font-weight: 750; margin-top: 4px">
                   Confidence: {{ Math.round(aiResult.confidence * 100) }}%
                 </div>
@@ -303,24 +303,24 @@ onMounted(async () => {
                 </div>
                 <!-- Protein-first item macros -->
                 <div style="margin-top: 10px; display:flex; align-items:baseline; justify-content:space-between; gap: 12px">
-                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">蛋白質</div>
+                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">Protein</div>
                   <div style="font-weight: 1000; letter-spacing:-0.03em; font-size: 22px; line-height: 1">
-                    {{ it.protein_g }}<span class="pc-muted" style="font-size: 11px; font-weight: 900; margin-left: 6px">克</span>
+                    {{ it.protein_g }}<span class="pc-muted" style="font-size: 11px; font-weight: 900; margin-left: 6px">grams</span>
                   </div>
                 </div>
 
                 <div style="margin-top: 10px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px">
                   <div class="pc-card" style="border-radius: 14px; padding: 8px 10px; text-align:center">
-                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">熱量</div>
-                    <div style="font-weight: 950; margin-top: 2px">{{ it.calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">大卡</span></div>
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">Calories</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ it.calories_kcal }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">kcal</span></div>
                   </div>
                   <div class="pc-card" style="border-radius: 14px; padding: 8px 10px; text-align:center">
-                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">碳水</div>
-                    <div style="font-weight: 950; margin-top: 2px">{{ it.carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">Carbohydrates</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ it.carbs_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">grams</span></div>
                   </div>
                   <div class="pc-card" style="border-radius: 14px; padding: 8px 10px; text-align:center">
-                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">脂肪</div>
-                    <div style="font-weight: 950; margin-top: 2px">{{ it.fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">克</span></div>
+                    <div class="pc-muted" style="font-size: 10px; font-weight: 900">Fat</div>
+                    <div style="font-weight: 950; margin-top: 2px">{{ it.fat_g }}<span class="pc-muted" style="font-size: 10px; font-weight: 900; margin-left: 4px">grams</span></div>
                   </div>
                 </div>
               </div>
@@ -328,31 +328,31 @@ onMounted(async () => {
 
             <div class="pc-card" style="margin-top: 12px; border-radius: 20px; padding: 12px 14px">
               <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: 10px">
-                <div style="font-weight: 950; letter-spacing: -0.02em">總營養</div>
+                <div style="font-weight: 950; letter-spacing: -0.02em">Total nutrition</div>
                 <div class="pc-pill" style="letter-spacing:0.12em">TOTAL</div>
               </div>
 
               <!-- Protein-first hero -->
               <div style="margin-top: 10px; display:flex; align-items:baseline; justify-content:space-between; gap: 12px">
-                <div class="pc-muted" style="font-size: 12px; font-weight: 900">蛋白質</div>
+                <div class="pc-muted" style="font-size: 12px; font-weight: 900">Protein</div>
                 <div style="font-weight: 1000; letter-spacing:-0.04em; font-size: 28px; line-height: 1">
-                  {{ aiResult.total.protein_g }}<span class="pc-muted" style="font-size: 12px; font-weight: 900; margin-left: 6px">克</span>
+                  {{ aiResult.total.protein_g }}<span class="pc-muted" style="font-size: 12px; font-weight: 900; margin-left: 6px">grams</span>
                 </div>
               </div>
 
               <!-- Supporting macros -->
               <div style="margin-top: 10px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px">
                 <div class="pc-card" style="border-radius: 16px; padding: 10px 12px">
-                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">熱量</div>
-                  <div style="font-weight: 950; margin-top: 2px">{{ aiResult.total.calories_kcal }}<span class="pc-muted" style="font-weight: 900; font-size: 11px; margin-left: 6px">大卡</span></div>
+                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">Calories</div>
+                  <div style="font-weight: 950; margin-top: 2px">{{ aiResult.total.calories_kcal }}<span class="pc-muted" style="font-weight: 900; font-size: 11px; margin-left: 6px">kcal</span></div>
                 </div>
                 <div class="pc-card" style="border-radius: 16px; padding: 10px 12px">
-                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">碳水化合物</div>
-                  <div style="font-weight: 950; margin-top: 2px">{{ aiResult.total.carbs_g }}<span class="pc-muted" style="font-weight: 900; font-size: 11px; margin-left: 6px">克</span></div>
+                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">Carbohydrates</div>
+                  <div style="font-weight: 950; margin-top: 2px">{{ aiResult.total.carbs_g }}<span class="pc-muted" style="font-weight: 900; font-size: 11px; margin-left: 6px">grams</span></div>
                 </div>
                 <div class="pc-card" style="border-radius: 16px; padding: 10px 12px">
-                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">脂肪</div>
-                  <div style="font-weight: 950; margin-top: 2px">{{ aiResult.total.fat_g }}<span class="pc-muted" style="font-weight: 900; font-size: 11px; margin-left: 6px">克</span></div>
+                  <div class="pc-muted" style="font-size: 11px; font-weight: 900">Fat</div>
+                  <div style="font-weight: 950; margin-top: 2px">{{ aiResult.total.fat_g }}<span class="pc-muted" style="font-weight: 900; font-size: 11px; margin-left: 6px">grams</span></div>
                 </div>
               </div>
             </div>
@@ -393,11 +393,11 @@ onMounted(async () => {
         <div class="pc-grid2">
           <NuxtLink to="/upload" class="pc-btn" style="height: 52px">
             <span class="material-symbols-outlined">camera_enhance</span>
-            換一張
+Upload another
           </NuxtLink>
           <NuxtLink to="/dashboard" class="pc-btn" style="height: 52px">
             <span class="material-symbols-outlined">dashboard</span>
-            去 Dashboard
+Go to Dashboard
           </NuxtLink>
         </div>
       </div>

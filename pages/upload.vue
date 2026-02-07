@@ -166,7 +166,7 @@ onBeforeUnmount(() => {
 
         <div style="text-align:center; flex:1">
           <div style="font-weight: 950; letter-spacing: -0.02em">Upload</div>
-          <div class="pc-muted" style="font-size: 11px; font-weight: 750">選擇照片 · 一鍵 AI 分析</div>
+          <div class="pc-muted" style="font-size: 11px; font-weight: 750">Meal photo → protein-first analysis</div>
         </div>
 
         <div style="width: 40px" aria-hidden="true" />
@@ -193,7 +193,7 @@ onBeforeUnmount(() => {
               <span class="material-symbols-outlined dropzone-icon">cloud_upload</span>
             </div>
             <div>
-              <div style="font-weight: 950; letter-spacing: -0.02em">拖曳或點擊上傳</div>
+              <div style="font-weight: 950; letter-spacing: -0.02em">Drag & drop or tap to upload</div>
               <div class="pc-muted" style="font-size: 12px; font-weight: 650; margin-top: 6px">
                 image/* · Max {{ maxSizeMb }}MB
               </div>
@@ -228,7 +228,7 @@ onBeforeUnmount(() => {
             </div>
             <button class="pc-btn" style="height: 42px; border-radius: 16px; padding: 0 14px" type="button" @click="clear">
               <span class="material-symbols-outlined" style="font-size: 18px">delete</span>
-              清除
+Clear
             </button>
           </div>
 
@@ -237,7 +237,7 @@ onBeforeUnmount(() => {
           </div>
 
           <div class="pc-muted" style="margin-top: 10px; text-align:center; font-size: 11px; font-weight: 800">
-            提示：Analysis 會讀取你這次的 session（localStorage/記憶體）
+Tip: Analysis reads your latest upload session (localStorage / in-memory).
           </div>
         </div>
       </section>
@@ -250,7 +250,7 @@ onBeforeUnmount(() => {
             @click="openFilePicker"
           >
             <span class="material-symbols-outlined">image</span>
-            從相簿選擇
+Choose from library
           </button>
 
           <NuxtLink
