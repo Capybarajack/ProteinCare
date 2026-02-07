@@ -12,12 +12,13 @@ const navItems = [
   { to: '/dashboard', icon: 'dashboard', label: 'Log' },
 ]
 
-definePageMeta({ middleware: 'require-auth' })
+// Auth is checked when user triggers upload actions (login prompt shown once/day)
 
 useHead({ title: 'Upload' })
 
 const session = useUploadSession()
 const { uploadMealPhoto } = useMealPhotoStorageUpload()
+const { ensureAuthedOrPrompt } = useLoginPromptOnce()
 
 const isUploading = ref(false)
 const uploadOk = ref(false)
@@ -39,7 +40,10 @@ const fileSizeText = computed(() => {
   return `${(fileSizeBytes.value / (1024 * 1024)).toFixed(2)} MB`
 })
 
-function openFilePicker() {
+async function openFilePicker(e?: Event) {
+  if (e) e.preventDefault()
+  const ok = await ensureAuthedOrPrompt('/upload')
+  if (!ok) return
   fileInput.value?.click()
 }
 
