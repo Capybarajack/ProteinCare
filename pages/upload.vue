@@ -16,6 +16,7 @@ const navItems = [
 
 useHead({ title: 'Upload' })
 
+const user = useAuthUser()
 const session = useUploadSession()
 const { uploadMealPhoto } = useMealPhotoStorageUpload()
 const { ensureAuthedOrPrompt } = useLoginPromptOnce()
@@ -40,11 +41,19 @@ const fileSizeText = computed(() => {
   return `${(fileSizeBytes.value / (1024 * 1024)).toFixed(2)} MB`
 })
 
-async function openFilePicker(e?: Event) {
+function openFilePicker(e?: Event) {
   if (e) e.preventDefault()
-  const ok = await ensureAuthedOrPrompt('/upload')
-  if (!ok) return
-  fileInput.value?.click()
+
+  // Important: file input dialogs must be triggered synchronously from a user gesture.
+  // If we `await` anything first, many browsers will block the picker and the page looks frozen.
+  if (user.value) {
+    fileInput.value?.click()
+    return
+  }
+
+  // Not logged in → show prompt (once/day). If user already dismissed today,
+  // the composable will redirect to login.
+  void ensureAuthedOrPrompt('/upload')
 }
 
 function setError(msg: string) {
