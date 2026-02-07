@@ -275,6 +275,50 @@ watch(
     </header>
 
     <main class="pc-main">
+      <!-- Protein intake guide (g/kg) -->
+      <section class="pc-card" style="border-radius: 20px; padding: 12px 14px; margin: 0 0 12px">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: 12px">
+          <div>
+            <div style="font-weight: 950; letter-spacing:-0.03em; font-size: 15px">每公斤體重需要多少蛋白質</div>
+            <div class="pc-muted" style="margin-top: 4px; font-size: 12px; font-weight: 750">以「g / kg」為基準（參考範圍）</div>
+          </div>
+          <div class="pc-pill" style="letter-spacing:0.12em">GUIDE</div>
+        </div>
+
+        <div style="margin-top: 10px; overflow:hidden; border-radius: 16px; border: 1px solid rgba(148, 163, 184, 0.18)">
+          <table style="width:100%; border-collapse: collapse; font-size: 12px">
+            <thead>
+              <tr style="background: rgba(148, 163, 184, 0.10)">
+                <th style="text-align:left; padding: 10px 12px; font-weight: 950">族群 / 目標</th>
+                <th style="text-align:right; padding: 10px 12px; font-weight: 950; white-space: nowrap">建議攝取量</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 10px 12px; font-weight: 850">一般成人（久坐）</td>
+                <td style="padding: 10px 12px; text-align:right; font-weight: 950">0.8 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
+              </tr>
+              <tr style="background: rgba(148, 163, 184, 0.06)">
+                <td style="padding: 10px 12px; font-weight: 850">一般有運動</td>
+                <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.0–1.2 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 12px; font-weight: 850">重量訓練 / 增肌</td>
+                <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.6–2.2 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
+              </tr>
+              <tr style="background: rgba(148, 163, 184, 0.06)">
+                <td style="padding: 10px 12px; font-weight: 850">減脂期（保肌）</td>
+                <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.8–2.4 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 12px; font-weight: 850">高齡者</td>
+                <td style="padding: 10px 12px; text-align:right; font-weight: 950">1.2–1.5 <span class="pc-muted" style="font-weight: 850">g / kg</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <div style="display:flex; align-items:flex-end; justify-content:space-between; padding: 0 4px 10px">
         <div>
           <div style="font-weight: 950; letter-spacing:-0.03em; font-size: 18px">紀錄</div>
