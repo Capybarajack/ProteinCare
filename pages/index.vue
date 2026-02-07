@@ -104,11 +104,11 @@ const lastUploadMeta = computed(() => {
         </p>
 
         <div class="pc-grid2" style="margin-top: 16px">
-          <NuxtLink to="/upload" class="pc-btn pc-btn--primary">
+          <NuxtLink to="/upload" class="pc-btn pc-btn--primary pc-btn--wrap">
             <span class="material-symbols-outlined">cloud_upload</span>
             Upload now
           </NuxtLink>
-          <NuxtLink to="/dashboard" class="pc-btn pc-btn--ghost">
+          <NuxtLink to="/dashboard" class="pc-btn pc-btn--ghost pc-btn--wrap">
             <span class="material-symbols-outlined">dashboard</span>
             View your log
           </NuxtLink>
