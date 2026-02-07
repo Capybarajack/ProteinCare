@@ -156,8 +156,17 @@ function loadFromLocal() {
 
 async function refresh() {
   if (isAuthed.value) {
+    // In authed mode: basics come from DB (profiles), not localStorage
+    try {
+      await loadBasicsFromProfile()
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('[dashboard] load profiles failed', e)
+    }
+
     await loadFromDb()
   } else {
+    loadBasicsFromLocal()
     loadFromLocal()
   }
 }
@@ -170,7 +179,7 @@ const countText = computed(() => {
 const proteinGoalG = ref<number>(120)
 const weightKg = ref<number | null>(null)
 
-onMounted(() => {
+function loadBasicsFromLocal() {
   try {
     const savedGoal = localStorage.getItem('pc_protein_goal_g')
     const ng = Number(savedGoal)
@@ -186,6 +195,27 @@ onMounted(() => {
   } catch {
     // ignore
   }
+}
+
+async function loadBasicsFromProfile() {
+  const u = user.value
+  if (!u?.id) return
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('weight_kg, protein_goal_g')
+    .eq('id', u.id)
+    .maybeSingle()
+
+  if (error) throw error
+
+  if (data?.protein_goal_g != null) proteinGoalG.value = Math.round(Number(data.protein_goal_g))
+  if (data?.weight_kg != null) weightKg.value = Math.round(Number(data.weight_kg) * 10) / 10
+}
+
+onMounted(() => {
+  // Logged-out mode only: keep offline experience via localStorage
+  if (!isAuthed.value) loadBasicsFromLocal()
 })
 
 function gramsFor(weight: number | null, gPerKg: number) {
@@ -200,12 +230,43 @@ function gramsRangeFor(weight: number | null, lo: number, hi: number) {
   return a === b ? `${a}` : `${a}–${b}`
 }
 
+let saveBasicsTimer: any = null
+async function saveBasicsToProfileSoon() {
+  const u = user.value
+  if (!u?.id) return
+
+  if (saveBasicsTimer) clearTimeout(saveBasicsTimer)
+  saveBasicsTimer = setTimeout(async () => {
+    try {
+      const goal = Number(proteinGoalG.value)
+      const weight = weightKg.value == null ? null : Number(weightKg.value)
+
+      const payload: any = {}
+      if (Number.isFinite(goal) && goal > 0) payload.protein_goal_g = Math.round(goal)
+      payload.weight_kg = weight != null && Number.isFinite(weight) && weight > 0 ? weight : null
+
+      const { error } = await supabase.from('profiles').update(payload).eq('id', u.id)
+      if (error) throw error
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('[dashboard] update profiles failed', e)
+    }
+  }, 350)
+}
+
 watch(
   proteinGoalG,
-  (v) => {
+  async (v) => {
+    const n = Number(v)
+    if (!Number.isFinite(n) || n <= 0) return
+
+    if (isAuthed.value) {
+      await saveBasicsToProfileSoon()
+      return
+    }
+
     try {
-      const n = Number(v)
-      if (Number.isFinite(n) && n > 0) localStorage.setItem('pc_protein_goal_g', String(Math.round(n)))
+      localStorage.setItem('pc_protein_goal_g', String(Math.round(n)))
     } catch {
       // ignore
     }
@@ -215,7 +276,12 @@ watch(
 
 watch(
   weightKg,
-  (v) => {
+  async (v) => {
+    if (isAuthed.value) {
+      await saveBasicsToProfileSoon()
+      return
+    }
+
     try {
       const n = Number(v)
       if (v == null) {
