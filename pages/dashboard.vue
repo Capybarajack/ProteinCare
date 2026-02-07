@@ -166,6 +166,61 @@ const countText = computed(() => {
   return isAuthed.value ? `${dbEntries.value.length} item(s)` : `${logs.value.length} item(s)`
 })
 
+// --- Protein goal / today progress (protein-first UX) ---
+const proteinGoalG = ref<number>(120)
+
+onMounted(() => {
+  try {
+    const saved = localStorage.getItem('pc_protein_goal_g')
+    const n = Number(saved)
+    if (saved != null && Number.isFinite(n) && n > 0) proteinGoalG.value = Math.round(n)
+  } catch {
+    // ignore
+  }
+})
+
+watch(
+  proteinGoalG,
+  (v) => {
+    try {
+      const n = Number(v)
+      if (Number.isFinite(n) && n > 0) localStorage.setItem('pc_protein_goal_g', String(Math.round(n)))
+    } catch {
+      // ignore
+    }
+  },
+  { deep: false }
+)
+
+function isSameLocalDate(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+}
+
+const todayProteinG = computed(() => {
+  const today = new Date()
+
+  if (isAuthed.value) {
+    return dbEntries.value
+      .filter((e) => isSameLocalDate(new Date(e.captured_at), today))
+      .reduce((sum, e) => sum + Number(e.total_protein_g || 0), 0)
+  }
+
+  return logs.value
+    .filter((e) => isSameLocalDate(new Date(e.createdAt), today))
+    .reduce((sum, e) => sum + Number(e.aiResult?.total?.protein_g || 0), 0)
+})
+
+const goalPct = computed(() => {
+  const goal = Number(proteinGoalG.value || 0)
+  if (!goal) return 0
+  return Math.max(0, Math.min(1, todayProteinG.value / goal))
+})
+
+const todayLabel = computed(() => {
+  const d = new Date()
+  return d.toLocaleDateString(undefined, { month: 'short', day: '2-digit' })
+})
+
 onMounted(async () => {
   await refresh()
 })
@@ -238,6 +293,60 @@ watch(
           清空
         </button>
       </div>
+
+      <!-- Protein progress (today) -->
+      <section class="pc-card" style="border-radius: 20px; padding: 12px 14px; margin: 0 0 12px">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: 12px">
+          <div style="min-width:0">
+            <div class="pc-muted" style="font-size: 11px; font-weight: 900">今日（{{ todayLabel }}）蛋白質累積</div>
+            <div style="margin-top: 6px; display:flex; align-items:baseline; gap: 8px">
+              <div style="font-weight: 1100; letter-spacing:-0.05em; font-size: 28px; line-height: 1">
+                {{ Math.round(todayProteinG) }}
+              </div>
+              <div class="pc-muted" style="font-size: 12px; font-weight: 900">克</div>
+              <div class="pc-muted" style="font-size: 12px; font-weight: 850">/ 目標 {{ proteinGoalG }} 克</div>
+            </div>
+          </div>
+
+          <div style="text-align:right">
+            <div class="pc-muted" style="font-size: 11px; font-weight: 900">達成率</div>
+            <div style="margin-top: 6px; font-weight: 1000; letter-spacing:-0.03em">
+              {{ Math.round(goalPct * 100) }}%
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px">
+          <div
+            style="height: 10px; border-radius: 999px; background: rgba(148, 163, 184, 0.22); overflow:hidden; border: 1px solid rgba(148, 163, 184, 0.18)"
+            aria-label="Protein goal progress"
+            role="progressbar"
+            :aria-valuemin="0"
+            :aria-valuemax="proteinGoalG"
+            :aria-valuenow="Math.round(todayProteinG)"
+          >
+            <div
+              :style="`height:100%; width:${Math.round(goalPct * 100)}%; border-radius:999px; background: linear-gradient(90deg, rgba(16,185,129,0.95), rgba(5,150,105,0.95)); box-shadow: 0 10px 22px rgba(16,185,129,0.18); transition: width 220ms ease;`"
+            />
+          </div>
+
+          <div style="margin-top: 10px; display:flex; align-items:center; justify-content:space-between; gap: 10px">
+            <div class="pc-muted" style="font-size: 11px; font-weight: 850">目標蛋白質</div>
+            <div style="display:flex; align-items:center; gap: 10px">
+              <input
+                v-model.number="proteinGoalG"
+                type="range"
+                min="50"
+                max="250"
+                step="5"
+                aria-label="Protein goal"
+                style="width: 160px"
+              />
+              <div class="pc-pill" style="min-width: 74px; justify-content:center">{{ proteinGoalG }} 克</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- DB error -->
       <div v-if="dbError" class="pc-card" style="margin-top: 12px; border-radius: 18px; border-color: rgba(239,68,68,0.22); background: rgba(239,68,68,0.06)">
