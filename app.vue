@@ -1,7 +1,6 @@
 <template>
   <div class="app-shell">
     <NuxtPage />
-    <PcLoginPrompt />
   </div>
 </template>
 

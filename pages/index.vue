@@ -4,16 +4,9 @@ import { useUploadSession } from '~/composables/useUploadSession'
 
 const supabase = useSupabase()
 const user = useAuthUser()
-const { ensureAuthedOrPrompt } = useLoginPromptOnce()
 
 async function signOut() {
   await supabase.auth.signOut()
-}
-
-async function onGoUpload(e?: Event) {
-  if (e) e.preventDefault()
-  const ok = await ensureAuthedOrPrompt('/upload')
-  if (ok) await navigateTo('/upload')
 }
 
 const route = useRoute()
@@ -82,7 +75,7 @@ const lastUploadMeta = computed(() => {
           <NuxtLink to="/dashboard" class="pc-iconbtn" aria-label="Open dashboard">
             <span class="material-symbols-outlined">history</span>
           </NuxtLink>
-          <NuxtLink to="/upload" class="pc-iconbtn" aria-label="Upload" @click="onGoUpload">
+          <NuxtLink to="/upload" class="pc-iconbtn" aria-label="Upload">
             <span class="material-symbols-outlined">add_a_photo</span>
           </NuxtLink>
         </div>
@@ -111,7 +104,7 @@ const lastUploadMeta = computed(() => {
         </p>
 
         <div class="pc-grid2" style="margin-top: 16px">
-          <NuxtLink to="/upload" class="pc-btn pc-btn--primary pc-btn--wrap" @click="onGoUpload">
+          <NuxtLink to="/upload" class="pc-btn pc-btn--primary pc-btn--wrap">
             <span class="material-symbols-outlined">cloud_upload</span>
             Upload now
           </NuxtLink>
